@@ -3,6 +3,7 @@ import {View, Text, TouchableOpacity, StyleSheet, Linking} from 'react-native';
 import {Button, Icon} from 'react-native-elements';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {NavigationContainer} from '@react-navigation/native';
+import { CommonActions } from '@react-navigation/native';
 
 // import ChangePassword from './Account/ChangePassword';
 // import CustomerInformation from './Account/CustomerInformation';
@@ -13,8 +14,11 @@ import ArticleViewScreen from './Home/ArticleViewScreen';
 import HomeScreen from './Home/HomeScreen';
 import NotificationListScreen from './Home/NotificationListScreen';
 
-// import RequestListScreen from './Requests/RequestListScreen';
-// import RequestViewScreen from './Requests/RequestViewScreen';
+import RequestListHistoryScreen from './Requests/RequestListHistoryScreen';
+import RequestListPendingScreen from './Requests/RequestListPendingScreen';
+import RequestListProcessingScreen from './Requests/RequestListProcessingScreen';
+import RequestViewScreen from './Requests/RequestViewScreen';
+
 
 export default class Navigator extends Component {    
     render(){
@@ -30,8 +34,10 @@ export default class Navigator extends Component {
                 <Drawer.Screen name="HomeScreen" component={HomeScreen} />
                 <Drawer.Screen name="NotificationListScreen" component={NotificationListScreen} />
 
-                {/* <Drawer.Screen name="RequestListScreen" component={RequestListScreen} />             
-                <Drawer.Screen name="RequestViewScreen" component={RequestViewScreen} /> */}
+                <Drawer.Screen name="RequestListHistoryScreen" component={RequestListHistoryScreen} />
+                <Drawer.Screen name="RequestListPendingScreen" component={RequestListPendingScreen} />
+                <Drawer.Screen name="RequestListProcessingScreen" component={RequestListProcessingScreen} />
+                <Drawer.Screen name="RequestViewScreen" component={RequestViewScreen} />      
               </Drawer.Navigator>                                        
             </NavigationContainer>
             
@@ -79,23 +85,33 @@ function CustomDrawerContent(props){
       </TouchableOpacity>
       <View style ={{
         marginLeft:10}}>
-        {/* 
+
+
         <MenuButtonScreenContainer 
-          screenName='RequestListScreen'
+          screenName='RequestListPendingScreen'
           iconName='linechart'
           iconType='antdesign'
           iconColor='#0A6ADA'
           iconSize={20}
-          screenTitle='Lịch sử xét nghiệm'
+          screenTitle='Tìm đơn xét nghiệm mới'
           navigator = {props.navigation}
         />   
         <MenuButtonScreenContainer 
-          screenName='AppointmentListScreen'
+          screenName='RequestListProcessingScreen'
           iconName='wechat'
           iconType='antdesign'
           iconColor='#0A6ADA'
           iconSize={20}
-          screenTitle='Lịch sử đặt khám'
+          screenTitle='Đơn đang nhận'
+          navigator = {props.navigation}
+        />  
+        <MenuButtonScreenContainer 
+          screenName='RequestListHistoryScreen'
+          iconName='wechat'
+          iconType='antdesign'
+          iconColor='#0A6ADA'
+          iconSize={20}
+          screenTitle='Lịch sử nhận đơn xét nghiệm'
           navigator = {props.navigation}
         />  
         <MenuButtonLinkingContainer 
@@ -114,7 +130,7 @@ function CustomDrawerContent(props){
           iconSize={20}
           screenTitle='Đăng xuất'
           navigator = {props.navigation}
-        />  */}
+        /> 
       </View>  
     </View>
   );
@@ -124,7 +140,12 @@ function MenuButtonScreenContainer({screenName, iconName, iconType, iconColor, i
   return(
     <TouchableOpacity
        style ={styles.navigatorButton}
-       onPress={() => navigator.navigate(screenName)}
+       onPress={() => navigator.dispatch(
+                        CommonActions.navigate({
+                            name: screenName,
+                            params: {
+                            },
+                        }))}
       >
         <Icon
           name={iconName}

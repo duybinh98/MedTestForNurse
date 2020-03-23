@@ -5,26 +5,94 @@ import { CommonActions } from '@react-navigation/native';
 import ScreenTopMenu from './../Common/ScreenTopMenu';
 import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import ArticleListItem from './ArticleListItem';
-// import articlesList from './../../Data/Articles'
+import {getApiUrl} from './../Common/CommonFunction';
+import articlesList from './../../Data/Articles';
+import requestsList from './../../Data/RequestsList';
+import testList from './../../Data/Test';
 
 export default class HomeScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            customerId:'2',
+            nurseId:'2',
             error: null,
-            articlesList: [],
+            articlesList: articlesList,
             testsList:[],
+            requestList: requestsList,
+            requestPendingList: requestsList,
+            requestProcessList: requestsList,
+            requestHistoryList: requestsList,
         };
-        this.onPressCreateRequest = this.onPressCreateRequest.bind(this);
+        this.getRequestPendingList = this.getRequestPendingList.bind(this);
+        this.getRequestProcessingList = this.getRequestProcessingList.bind(this);
+        this.getRequestHistoryList = this.getRequestHistoryList.bind(this);
     }
 
     componentDidMount() {
         this.callApiArticlesList();
     }
+    
+    CallApiGetRequestPendingList(){
+        fetch(getApiUrl()+"/request/list")
+        .then(res => res.json())
+        .then(
+            (result) => {
+            this.setState(previousState => ({
+                requestList: result,
+            }));
+            },            
+            (error) => {
+            this.setState({
+                error
+            });
+            }
+        )
+    }
+
+    getRequestPendingList(){
+        const _requestList = this.state.requestPendingList;
+        let result = [];
+        let index = _requestList.length - 1;
+        while (index >= 0) {
+            if (_requestList[index].req_status === 'pending' || _requestList[index].req_status === 'coordinatorlostsample' ) {
+                // _requestList.splice(index, 1);
+                result.push(_requestList[index]);
+                }
+            index -= 1;
+        }        
+        return result;
+    }
+
+    getRequestProcessingList(){
+        const _requestList = this.state.requestProcessList;
+        let result = [];
+        let index = _requestList.length - 1;
+        while (index >= 0) {
+            if (_requestList[index].req_status === 'accepted' || _requestList[index].req_status === 'transporting' || _requestList[index].req_status === 'lostsample' ) {
+                // _requestList.splice(index, 1);
+                result.push(_requestList[index]);
+                }
+            index -= 1;
+        }
+        return result;
+    }
+
+    getRequestHistoryList(){
+        const _requestList = this.state.requestHistoryList;
+        let result = [];
+        let index = _requestList.length - 1;
+        while (index >= 0) {
+            if (_requestList[index].req_status === 'waitingforresult' || _requestList[index].req_status === 'closed') {
+                // _requestList.splice(index, 1);
+                result.push(_requestList[index]);
+                }
+            index -= 1;
+        }
+        return result;
+    }
 
     callApiArticlesList= async () =>  {
-        fetch("http://192.168.1.11:8080/articles/list")
+        fetch(getApiUrl()+"/articles/list")
         .then(res => res.json())
         .then(
             (result) => {
@@ -40,30 +108,6 @@ export default class HomeScreen extends Component {
         )
     }
 
-    onPressCreateRequest(){
-        fetch("http://192.168.1.11:8080/test-types/type-test")
-        .then(res => res.json())
-        .then(
-            (result) => {
-            this.props.navigation.dispatch(
-            CommonActions.navigate({
-                name: 'RequestTestListScreen',
-                params: {
-                    customerId: this.state.customerId,
-                    testsList: result,
-                    selectedTest: [], 
-                    totalPrice: '0',
-                },
-            }))  
-            },            
-            (error) => {
-            this.setState({
-                error
-            });
-            }
-        )
-        
-    }
 
     render(){
         const { error, isLoaded, articlesList } = this.state;        
@@ -85,12 +129,13 @@ export default class HomeScreen extends Component {
                                     marginLeft: 40                        
                                 }]}
                                 titleStyle={{color:'#0A6ADA'}} 
-                                title="Đặt khám"
+                                title="Tìm đơn xét nghiệm mới"
                                 onPress={() => this.props.navigation.dispatch(
                                 CommonActions.navigate({
-                                    name: 'CreateAppointmentScreen',
+                                    name: 'RequestListPendingScreen',
                                     params: {
-                                        // customerId: this.state.customerId,
+                                        requestPendingList: this.getRequestPendingList(),
+                                        // nurseId: this.state.nurseId,
                                     },
                                 }))}
                             >\</Button>  
@@ -101,10 +146,17 @@ export default class HomeScreen extends Component {
                                     marginRight:40
                                 }]}
                                 titleStyle={{color:'#0A6ADA'}} 
-                                title="Đặt xét nghiệm"
-                                onPress={() => {
-                                    this.onPressCreateRequest();
-                                }}
+                                title="Các xét nghiệm đang nhận"
+                                onPress={() => this.props.navigation.dispatch(
+                                CommonActions.navigate({
+                                    name: 'RequestListProcessingScreen',
+                                    // name: 'RequestListHistoryScreen',
+                                    params: {
+                                        // requestHistoryList: this.getRequestHistoryList(),
+                                        requestProcessingList: this.getRequestProcessingList(),
+                                        // nurseId: this.state.nurseId,
+                                    },
+                                }))}
                             >\</Button>   
 
                         </View>
@@ -116,13 +168,13 @@ export default class HomeScreen extends Component {
                             }}
                             keyboardShouldPersistTaps="always"
                             keyboardDismissMode='on-drag'
-                            data={articlesList}
+                            data={this.state.articlesList}
                             renderItem={({item}) => {
                                 return (
                                     <ArticleListItem 
                                         image={item.image}
                                         title={item.tittle}
-                                        shortContent={item.content}
+                                        shortContent={item.shortContent}
                                         content={item.content}   
                                         navigation={this.props.navigation}
                                         >

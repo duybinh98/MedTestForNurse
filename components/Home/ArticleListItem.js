@@ -6,7 +6,7 @@ import ScreenBackGround from './../Common/ScreenBackGround';
 
 export default class ArticleListItem extends Component {
     render(){
-        const _imageUri = this.props.imageUri;
+        const _imageUri = this.props.image;
         const _title = this.props.title;
         const _shortContent = this.props.shortContent;
         const _content = this.props.content;
