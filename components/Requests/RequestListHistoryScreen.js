@@ -73,7 +73,7 @@ export default class RequestListHistoryScreen extends Component {
                     <View 
                         style ={styles.background}>            
                         <View style={styles.titleArea}>     
-                            <Text style={{fontSize:22,color:'#25345D'}}>Lịch sử nhận đơn</Text>
+                            <Text style={{fontSize:30,color:'#25345D'}}>Lịch sử nhận đơn</Text>
                         </View>
                         <View style = {{flex:1}}>                            
                             <FlatList style={{                    
