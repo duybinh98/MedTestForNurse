@@ -9,16 +9,16 @@ export default class ScreenBottomMenu extends Component {
                 <Icon
                     name='user'
                     type='antdesign'
-                    color='#0A6ADA'
+                    color={iconColor}
                     size= {40}
                     iconStyle={[styles.button,{marginLeft:20}]}
-                    onPress={() => this.props.navigation.navigate('CustomerInformation')}
+                    onPress={() => this.props.navigation.navigate('NurseInformation')}
                 ></Icon>
                 
                 <Icon
                     name='home'
                     type='entypo'
-                    color='#0A6ADA'
+                    color={iconColor}
                     size= {40}
                     iconStyle={[styles.button,{marginLeft:20}]}
                     onPress={() => this.props.navigation.navigate('HomeScreen')}
@@ -26,7 +26,7 @@ export default class ScreenBottomMenu extends Component {
                 <Icon
                     name='phone-call'
                     type='feather'
-                    color='#0A6ADA'
+                    color={iconColor}
                     size= {40}
                     iconStyle={[styles.button,{marginRight:20}]}           
                     onPress={() => Linking.openURL('tel:1900561252')}         
@@ -35,6 +35,10 @@ export default class ScreenBottomMenu extends Component {
         );
     }
 }
+
+// const iconColor = '#0A6ADA'
+const iconColor = 'white'
+
 
 const styles = StyleSheet.create({
     menuArea:{

@@ -3,7 +3,7 @@ import { View, StyleSheet, Dimensions, Text, TextInput, ScrollView, TouchableOpa
 import ScreenTopMenuBack from './../Common/ScreenTopMenuBack';
 import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import { CommonActions } from '@react-navigation/native';
-import { convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor } from './../Common/CommonFunction'
+import { getApiUrl, convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor } from './../Common/CommonFunction'
 // import renderField from '../../Validate/RenderField'
 import { Field, reduxForm } from 'redux-form';
 
@@ -33,18 +33,32 @@ class CancelRequestScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            name: 'Nguyễn Văn A',
-            date: '20/20/2020',
-            time: '17h00',
+            name: this.props.route.params.name ? this.props.route.params.name : 'Nguyễn Văn A',
+            date: this.props.route.params.date ? this.props.route.params.date : '20/20/2020',
+            time: this.props.route.params.freeTime ? this.props.route.params.time : '17h00',
             showFooter: true,
             buttonText: 'Hủy đơn',
             reason: '',
         };
     }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.route.params !== this.props.route.params) {
+            this.setState(previousState => ({
+                name: this.props.route.params.name ? this.props.route.params.name : 'Nguyễn Văn A',
+                date: this.props.route.params.date ? this.props.route.params.date : '20/20/2020',
+                time: this.props.route.params.freeTime ? this.props.route.params.time : '17h00',
+                reason: '',
+            }));
+        }
+    }
+
     componentDidMount() {
         this.keyboardDidShowSub = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
         this.keyboardDidHideSub = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
     }
+
+    
     RenderFooter() {
         if (this.state.showFooter) {
             return (
@@ -101,12 +115,12 @@ class CancelRequestScreen extends Component {
                             <View style={{
                                 width: 180
                             }}>
-                                <Text style={styles.textInfor} >Ngày hẹn: {(this.state.date)}</Text>
+                                <Text style={styles.textInfor} >Ngày hẹn: {convertDateTimeToDate(this.state.date)}</Text>
                             </View>
                             <View style={{
                                 width: 120
                             }}>
-                                <Text style={styles.textInfor} >Giờ hẹn: {(this.state.time)}</Text>
+                                <Text style={styles.textInfor} >Giờ hẹn: {convertDateTimeToTime(this.state.date)}</Text>
                             </View>
                         </View>
                     </View>

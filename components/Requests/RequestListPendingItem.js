@@ -29,6 +29,7 @@ export default class RequestListPendingItem extends Component {
                         CommonActions.navigate({
                             name: 'RequestViewScreen',
                             params: {
+                                requestId: this.props.requestId,
                                 name: this.props.cust_name,
                                 address: this.props.appoint_address,
                                 phone: this.props.cust_phone,

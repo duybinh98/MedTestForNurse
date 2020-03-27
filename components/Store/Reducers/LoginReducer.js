@@ -77,36 +77,45 @@ export default function reducer(state = {
 }
 
 function sendLoginRequest(phoneNumber, password) {
-    return new Promise((resolve, reject) => {
-    if (phoneNumber === '0123456789' && password === '123456') {
-        fetch(getApiUrl()+"/users/customers/detail/1")
+    return new Promise((resolve, reject) => {    
+
+    fetch(getApiUrl()+'/users/login', {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            phoneNumber: phoneNumber,
+            password: password,
+        }),
+        })
         .then(res => res.json())
         .then(
             (result) => {
-                const token='12345';
-                const customerInfo = result;
+                // console.dir(JSON.stringify(result));
+                const token=result.token;
+                const customerInfo = result.customerInfo;
                 return resolve({token,customerInfo});
-            },            
+            },
             (error) => {
                 return reject(new Error(error));
             }
-        ) 
-    } else if (phoneNumber === '0123456799' && password === '123456') {
-        fetch(getApiUrl()+"/users/customers/detail/2")
-        .then(res => res.json())
-        .then(
-            (result) => {
-                const token='12345';
-                const customerInfo = result;
-                return resolve({token,customerInfo});
-            },            
-            (error) => {
-                return reject(new Error(error));
-            }
-        )       
-    } else {
-        return reject(new Error('Invalid email or password'));
-    }    
+        );
            
+// fetch(getApiUrl()+"/users/customers/detail/1")
+//         .then(res => res.json())
+//         .then(
+//             (result) => {
+//                 const token='12345';
+//                 const customerInfo = result;
+//                 return resolve({token,customerInfo});
+//             },            
+//             (error) => {
+//                 return reject(new Error(error));
+//             }
+//         ) 
+//          return reject(new Error('Invalid email or password'));
+        
     });
 }

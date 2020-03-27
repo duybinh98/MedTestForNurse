@@ -4,6 +4,7 @@ import { Button, Icon } from 'react-native-elements';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
+import { connect } from 'react-redux';
 
 import NurseInformation from './Account/NurseInformation';
 import ChangePassword from './Account/ChangePassword';
@@ -20,11 +21,33 @@ import RequestListProcessingScreen from './Requests/RequestListProcessingScreen'
 import RequestViewScreen from './Requests/RequestViewScreen';
 import CancelRequestScreen from './Requests/CancelRequestScreen';
 
-export default class Navigator extends Component {
+class Navigator extends Component {
+  constructor(props) {
+        super(props)
+        this.state = {
+            token: null,
+            customerInfor: null,
+            isLoadSuccess: null,
+            loadError: null
+        };
+    }
+
+    componentDidUpdate  (prevProps, prevState) {        
+         if (prevProps !== this.props) {
+            this.setState(previousState => ({ 
+                token: this.props.token,
+                customerInfor: this.props.customerInfor,
+                isLoadSuccess: this.props.isLoadSuccess,
+                loadError: this.props.loadError
+            }));
+        }
+    }
+
+
   render() {
     return (
       <NavigationContainer>
-        <Drawer.Navigator initialRouteName="HomeScreen" drawerContent={props => CustomDrawerContent(props)}>
+        <Drawer.Navigator initialRouteName="LoginScreen" drawerContent={props => CustomDrawerContent(props,this.state? this.state:null)}>
           <Drawer.Screen name="NurseInformation" component={NurseInformation} />
           <Drawer.Screen name="ChangePassword" component={ChangePassword} />
 
@@ -49,47 +72,46 @@ export default class Navigator extends Component {
 
 const Drawer = createDrawerNavigator();
 
-function CustomDrawerContent(props) {
+function CustomDrawerContent(props, state) {
   return (
     <View style={{ flex: 1 }}>
-      <TouchableOpacity
-        style={{
-          height: 130,
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          justifyContent: 'flex-end',
-          borderBottomWidth: 1,
-          borderBottomColor: 'black',
-          paddingLeft: 10,
-          paddingBottom: 15
+      <TouchableOpacity 
+        style ={{
+        height:130,
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-end',
+        borderBottomWidth:1,
+        borderBottomColor:'black',
+        paddingLeft:10,
+        paddingBottom:15
         }}
         onPress={() => props.navigation.navigate('NurseInformation')}
-      >
-        <Icon
-          name='user'
-          type='antdesign'
-          color='#0A6ADA'
-          size={60}
-          iconStyle={{
-            marginLeft: 10,
-            marginBottom: 5
-          }}
         >
-        </Icon>
-        <Text style={{
-          fontSize: 15,
-          color: 'black',
-        }}>+84123456789</Text>
-        <Text style={{
-          fontSize: 20,
-          color: 'black',
-        }}>Nguyen Van An</Text>
+          <Icon
+            name='user'
+            type='antdesign'
+            color='#0A6ADA'
+            size= {60}            
+            iconStyle={{
+              marginLeft:10,
+              marginBottom:5
+            }}
+            >
+          </Icon>
+          <Text style={{
+            fontSize: 15,
+            color: 'black',
+          }}>{state?state.customerInfor?state.customerInfor.phoneNumber:'0000000000':'0000000000'}</Text>
+          <Text style={{
+            fontSize: 20,
+            color: 'black',
+          }}>{state?state.customerInfor?state.customerInfor.name:'A guest':'A guest'}</Text>
       </TouchableOpacity>
+      
       <View style={{
         marginLeft: 10
       }}>
-
-
         <MenuButtonScreenContainer
           screenName='RequestListPendingScreen'
           iconName='linechart'
@@ -178,6 +200,23 @@ function MenuButtonLinkingContainer({ iconName, iconType, iconColor, iconSize, s
 
   );
 }
+
+const mapStateToProps = (state) => {
+    return {
+        token: state.login.token,
+        customerInfor: state.loadCustomer.customerInfor,
+        isLoadSuccess: state.loadCustomer.isLoadSuccess,
+        loadError: state.loadCustomer.LoadError
+    };
+}
+const mapStateToDispatch = (dispatch) => {
+    return {
+        load: (customerInfor) => dispatch(loadCustomerInfor(customerInfor)),
+    };
+}
+
+export default connect(mapStateToProps, mapStateToDispatch)(Navigator);
+
 
 const styles = StyleSheet.create({
   navigatorButton: {

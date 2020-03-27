@@ -16,7 +16,7 @@ export default class HomeScreen extends Component {
         this.state = {
             nurseId:'2',
             error: null,
-            articlesList: articlesList,
+            articlesList: [],
             testsList:[],
             requestList: requestsList,
             requestPendingList: requestsList,
@@ -29,25 +29,9 @@ export default class HomeScreen extends Component {
     }
 
     componentDidMount() {
-        this.callApiArticlesList();
+        this.callApiArticlesList();        
     }
-    
-    CallApiGetRequestPendingList(){
-        fetch(getApiUrl()+"/request/list")
-        .then(res => res.json())
-        .then(
-            (result) => {
-            this.setState(previousState => ({
-                requestList: result,
-            }));
-            },            
-            (error) => {
-            this.setState({
-                error
-            });
-            }
-        )
-    }
+
 
     getRequestPendingList(){
         const _requestList = this.state.requestPendingList;
@@ -105,7 +89,7 @@ export default class HomeScreen extends Component {
                 error
             });
             }
-        )
+        )   
     }
 
 

@@ -1,42 +1,75 @@
 import React, {Component} from 'react';
 import {View, StyleSheet, Image, Text, Dimensions, FlatList, Alert} from 'react-native';
 import {Button} from 'react-native-elements';
+import { connect } from 'react-redux';
+import { CommonActions } from '@react-navigation/native';
 import ScreenTopMenuBack from './../Common/ScreenTopMenu';
 import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import NotificationItem from './NotificationItem';
 // import articlesList from './../../Data/Articles'
+import {getApiUrl} from './../Common/CommonFunction'
 
-export default class NotificationListScreen extends Component {
+class NotificationListScreen extends Component {
     constructor(props) {
     super(props);
     this.state = {
-      error: null,
-      isLoaded: false,
-      items: []
+        customerId: this.props.customerInfor? this.props.customerInfor.id: '-1',
+        notiList: [],
+        dataChanged: true,
+        testsList: [],
     };
-  }
+    }
 
-  componentDidMount() {
-    fetch("https://jsonplaceholder.typicode.com/photos")
-      .then(res => res.json())
-      .then(
-        (result) => {
-          this.setState(previousState => ({
-            isLoaded: true,
-            items: result
-          }));
-        },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
-        (error) => {
-          this.setState({
-            isLoaded: true,
-            error
-          });
-        }
-      )
-  }
+    componentDidMount() {
+        this.callNotiApi();
+        this.callApiTestList();
+        this.props.navigation.addListener("focus", () => {
+            this.callNotiApi();
+        })
+    } 
+
+    callNotiApi(){
+        fetch(getApiUrl()+'/users/'+this.state.customerId+'/notfications/list', {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer '+this.props.token,
+            }
+        })
+        .then(res => res.json())
+        .then(
+            (result) => {
+                console.log(result)
+                result.message ? null: 
+                this.setState(previousState => ({
+                    notiList: result,
+                    dataChanged: !this.state.dataChanged,
+                }));
+            },            
+            (error) => {
+                console.log(error)
+            }
+        )  
+    }
+
+    
+    callApiTestList = async () => {
+        fetch(getApiUrl()+"/test-types/type-test")
+        .then(res => res.json())
+        .then(
+            (result) => {
+            this.setState(previousState => ({
+                testsList: result,
+            }));
+            },            
+            (error) => {
+                console.log(error)
+            }
+        )  
+    }
+
+
     render(){
         const { error, isLoaded, items } = this.state;
         // if (error) {
@@ -59,12 +92,16 @@ export default class NotificationListScreen extends Component {
                             }}
                             keyboardShouldPersistTaps="always"
                             keyboardDismissMode='on-drag'
-                            data={this.state.items}
+                            data={this.state.notiList}
+                            extraData={this.state.dataChanged}
                             renderItem={({item,index}) => {
                                 return (
                                     <NotificationItem 
                                         // content={item.content}
-                                        content={item.title}
+                                        content={item.message}
+                                        testsList={this.state.testsList}
+                                        requestId={item.requestID}
+                                        token={this.props.token}
                                         navigation={this.props.navigation}
                                         >
                                     </NotificationItem>
@@ -76,9 +113,27 @@ export default class NotificationListScreen extends Component {
                     <ScreenBottomMenu {...this.props}></ScreenBottomMenu>
                 </View>  
         );
-        // }
     }
 }
+const mapStateToProps = (state) => {
+    return {
+        token: state.login.token,
+        customerInfor: state.loadCustomer.customerInfor,
+        isLoadSuccess: state.loadCustomer.isLoadSuccess,
+        loadError: state.loadCustomer.LoadError,
+        token: state.login.token
+    };
+}
+const mapStateToDispatch = (dispatch) => {
+    return {
+        load: (customerInfor) => dispatch(loadCustomerInfor(customerInfor)),
+    };
+}
+
+export default connect(mapStateToProps, mapStateToDispatch)(NotificationListScreen);
+
+
+
 const styles = StyleSheet.create({
     background:{
         flex:1, 

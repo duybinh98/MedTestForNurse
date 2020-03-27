@@ -31,11 +31,12 @@ class changePassword extends Component {
         } else if (values.cfNewPassword !== values.newPassword) {
             alert("Xác nhận mật khẩu mới không đúng!")
         } else {
-            fetch(getApiUrl()+'/users/customers/change-password/'+this.state.customerId, {
+            fetch(getApiUrl()+'/users/nurses/change-password/'+this.state.customerId, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
+                    // Authorization: 'Bearer '+this.props.token,
                 },
                 body: JSON.stringify({
                     oldPassword: this.state.password,
@@ -48,11 +49,6 @@ class changePassword extends Component {
                 (result) => {
                     this.props.navigation.dispatch(
                         CommonActions.navigate({
-                            // name: 'LoginScreen',
-                            // params: {
-                            //     password: this.state.password,
-                            //     newPassword: this.state.newPassword,
-                            // },
                             name: 'HomeScreen',
                             params: {
 
@@ -94,17 +90,17 @@ class changePassword extends Component {
                         </View>
                     </View>
                     <Field name="password" keyboardType="default" component={renderField} iconName="lock-question"
-                        iconType="material-community" placeholder="Mật khẩu cũ" secureText={true}
+                        iconType="material-community" placeholder="Mật khẩu cũ" isSecureText={true}
                         onChange={(text) => { this.setState({ password: text }) }}
                         validate={[required, isWeakPassword]}
                     />
                     <Field name="newPassword" keyboardType="default" component={renderField} iconName="lock-question"
-                        iconType="material-community" placeholder="Mật khẩu mới" secureText={true}
+                        iconType="material-community" placeholder="Mật khẩu mới" isSecureText={true}
                         onChange={(text) => { this.setState({ newPassword: text }) }}
                         validate={[required, isWeakPassword]}
                     />
                     <Field name="cfNewPassword" keyboardType="default" component={renderField} iconName="lock-question"
-                        iconType="material-community" placeholder="Xác nhận mật khẩu mới" secureText={true}
+                        iconType="material-community" placeholder="Xác nhận mật khẩu mới" isSecureText={true}
                         validate={[required, isWeakPassword]}
                     />
                     <TouchableOpacity style={styles.btnChangePassword} onPress={handleSubmit(this.submit)}>

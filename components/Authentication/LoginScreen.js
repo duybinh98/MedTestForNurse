@@ -33,9 +33,8 @@ class LoginComponent extends Component {
     submit = value => {
         const { phoneNumber, password } = this.state;
         this.props.login(phoneNumber, password)
-
         setTimeout(() => {
-            if (this.props.customerInfoFromLogin != null) {
+            if (this.props.customerInfoFromLogin != null ) {                
                 this.setState(previousState => ({
                     phoneNumber: '',
                     password: '',
@@ -47,13 +46,13 @@ class LoginComponent extends Component {
                         params: {
                         },
                     })
-                )
-            }
+                )                
+            }  
             else {
-                console.log(this.props.LoginError)
-                Alert.alert('wrong phone number or password');
-            }
-        }, 1000)
+                // console.log('error at screen'+this.props.LoginError)
+                // Alert.alert(this.props.LoginError.message);
+                }
+        },2000)
 
 
     }
@@ -76,12 +75,12 @@ class LoginComponent extends Component {
                 </View>
                 <View style={styles.fieldContainer}>
                     <Field name="phonenumber" keyboardType="phone-pad" component={renderField} iconName="cellphone"
-                        iconType="material-community" placeholder="Số điện thoại" secureText={false}
+                        iconType="material-community" placeholder="Số điện thoại" isSecureText={false}
                         onChange={(text) => { this.setState({ phoneNumber: text }) }}
                         validate={[required, isNumber, isPhonenumber]}
                     />
                     <Field name="password" keyboardType="default" component={renderField} iconName="lock-question"
-                        iconType="material-community" placeholder="Mật khẩu" secureText={true}
+                        iconType="material-community" placeholder="Mật khẩu" isSecureText={true}
                         onChange={(text) => { this.setState({ password: text }) }}
                         validate={[required, isWeakPassword]}
                     />
