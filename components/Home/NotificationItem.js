@@ -17,18 +17,18 @@ export default class NotificationItem extends Component {
         this.onItemPress = this.onItemPress.bind(this)
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps.route.params !== this.props.route.params) {
-            this.setState(previousState => ({
-                requestId: this.props.requestId? this.props.requestId: '-1',     
-                token: this.props.token,
-                content: this.props.content,
-            }));
-        }
-    }
+    // componentDidUpdate(prevProps, prevState) {
+    //     if (prevProps.route.params !== this.props.route.params) {
+    //         this.setState(previousState => ({
+    //             requestId: this.props.requestId? this.props.requestId: '-1',     
+    //             token: this.props.token,
+    //             content: this.props.content,
+    //         }));
+    //     }
+    // }
 
     onItemPress(){
-        fetch(getApiUrl()+'/requests/details/'+this.state.requestId, {
+        fetch(getApiUrl()+'/requests/detail/'+this.state.requestId, {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -54,7 +54,8 @@ export default class NotificationItem extends Component {
                         selectedTest: result.lsSelectedTest,   
                         status: result.requestStatus,
                         testsList: this.props.testsList,
-                        totalAmount: results.requestAmount,
+                        totalAmount: result.requestAmount,
+                        backScreen: 'NotificationListScreen'
                     },
                 }))
             },            

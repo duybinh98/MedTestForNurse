@@ -168,6 +168,7 @@ class RequestViewScreen extends Component {
                     date: this.state.date,
                     nurseId: this.props.customerInfor.id,
                     backScreen:'RequestListProcessingScreen',
+                    token: this.props.token,
                 },
             }))  
     }

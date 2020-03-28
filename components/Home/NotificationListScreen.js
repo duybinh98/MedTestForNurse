@@ -3,7 +3,7 @@ import {View, StyleSheet, Image, Text, Dimensions, FlatList, Alert} from 'react-
 import {Button} from 'react-native-elements';
 import { connect } from 'react-redux';
 import { CommonActions } from '@react-navigation/native';
-import ScreenTopMenuBack from './../Common/ScreenTopMenu';
+import ScreenTopMenuBack from './../Common/ScreenTopMenuBack';
 import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import NotificationItem from './NotificationItem';
 // import articlesList from './../../Data/Articles'
@@ -29,7 +29,7 @@ class NotificationListScreen extends Component {
     } 
 
     callNotiApi(){
-        fetch(getApiUrl()+'/users/'+this.state.customerId+'/notfications/list', {
+        fetch(getApiUrl()+'/users/'+this.state.customerId+'/notifications/list', {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -121,7 +121,6 @@ const mapStateToProps = (state) => {
         customerInfor: state.loadCustomer.customerInfor,
         isLoadSuccess: state.loadCustomer.isLoadSuccess,
         loadError: state.loadCustomer.LoadError,
-        token: state.login.token
     };
 }
 const mapStateToDispatch = (dispatch) => {
