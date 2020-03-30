@@ -22,7 +22,7 @@ class RequestViewScreen extends Component {
             status: this.props.route.params.status ? this.props.route.params.status : 'Đang đợi lấy mẫu',
             statusName: this.props.route.params.status ? getStateName(this.props.route.params.status) : 'Đang đợi lấy mẫu',
             statusColor: this.props.route.params.status ? getStateColor(this.props.route.params.status) : '#7ab648',
-            nurseName: 'Nguyễn Văn B',
+            nurseName:  this.props.route.params.nurseName ? this.props.route.params.nurseName : '',
             totalAmount: this.props.route.params.totalAmount ? this.props.route.params.totalAmount : 'free',
             leftButtonText: this.props.route.params.status ? this.getLeftButtonName(this.props.route.params.status) : '',
             rightButtonText: this.props.route.params.status ? this.getRightButtonName(this.props.route.params.status) : 'Quay lại',
@@ -48,7 +48,7 @@ class RequestViewScreen extends Component {
                 status: this.props.route.params.status ? this.props.route.params.status : 'Đang đợi lấy mẫu',
                 statusName: this.props.route.params.status ? getStateName(this.props.route.params.status) : 'Đang đợi lấy mẫu',
                 statusColor: this.props.route.params.status ? getStateColor(this.props.route.params.status) : '#7ab648',
-                nurseName: 'Nguyễn Văn B',
+                nurseName:  this.props.route.params.nurseName ? this.props.route.params.nurseName : '',
                 totalAmount: this.props.route.params.totalAmount ? this.props.route.params.totalAmount : 'free',
                 leftButtonText: this.props.route.params.status ? this.getLeftButtonName(this.props.route.params.status) : '',
                 rightButtonText: this.props.route.params.status ? this.getRightButtonName(this.props.route.params.status) : 'Quay lại',
@@ -273,7 +273,7 @@ class RequestViewScreen extends Component {
                 this.props.navigation.goBack();
                 break;
             case 'lostsample':
-                this.props.navigation.goBack();
+                this.onTakingSample();
                 break;
             case 'coordinatorlostsample':
                 this.props.navigation.goBack();
@@ -304,6 +304,9 @@ class RequestViewScreen extends Component {
                         <Text style={{ fontSize: 22, color: '#25345D' }}>Đơn xét nghiệm</Text>
                     </View>
                     <View style={styles.infoArea}>
+                        <View style={styles.textContainer}>
+                            <Text style={styles.textInfor} >Mã đơn xét nghiệm:  {this.state.requestId}</Text>
+                        </View> 
                         <View style={styles.textContainer}>
                             <Text style={styles.textInfor} >Tên hiển thị:  {this.state.name}</Text>
                         </View>

@@ -39,6 +39,7 @@ export default class RequestListPendingItem extends Component {
                                 status: this.props.req_status,
                                 testsList: this.props.testList,
                                 totalAmount: this.props.req_amount,
+                                nurseName: this.props.nurse_name,
                                 // customerInfo  = this.state.customerInfo,
                             },
                         })
