@@ -10,8 +10,8 @@ export default class ScreenTopMenuBack extends Component {
             <View style ={styles.menuArea}>                           
                 <Icon
                     name='chevron-left'
-                    type='Entypo'
-                    color='#0A6ADA'
+                    type='entypo'
+                    color={iconColor}
                     size= {40}
                     iconStyle={[styles.button,{marginLeft:20}]}
                     onPress= {() => {
@@ -31,6 +31,9 @@ export default class ScreenTopMenuBack extends Component {
         );
     }
 }
+
+// const iconColor = '#0A6ADA'
+const iconColor = 'white'
 
 const styles = StyleSheet.create({
     menuArea:{

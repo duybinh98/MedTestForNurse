@@ -1,14 +1,17 @@
 import React, {Component} from 'react';
 import {View, StyleSheet, Dimensions, Text, TouchableOpacity, ScrollView, FlatList} from 'react-native';
 import { CommonActions } from '@react-navigation/native';
+import { connect } from 'react-redux';
 import ScreenTopMenuBack from './../Common/ScreenTopMenuBack';
 import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import RequestListPendingItem from './RequestListPendingItem';
 import requestsList from './../../Data/RequestsList'
 import testList from './../../Data/Test'
+import {getApiUrl} from './../Common/CommonFunction'
 
 
-export default class RequestListPendingScreen extends Component {
+
+class RequestListPendingScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -16,54 +19,82 @@ export default class RequestListPendingScreen extends Component {
             Button1Selected: true,
             Button2Selected: false,
             dataChanged: true,
-            requestList: this.props.route.params.requestPendingList? this.props.route.params.requestPendingList : [],
+            testsList: [],
+            // requestList: this.props.route.params.requestPendingList? this.props.route.params.requestPendingList : [],
+            requestList: [],
         };
         this.sortByCreateTime = this.sortByCreateTime.bind(this);
         this.sortByAppointmentTime = this.sortByAppointmentTime.bind(this);
     }
     
     componentDidMount(){
-        this.setState(previousState => ({ 
-            requestList: this.sortByCreateTime(),
-        }));
+        this.callApiGetRequestPendingList();
+        this.callApiTestList();
+        this.props.navigation.addListener("focus", () => {
+            this.callApiGetRequestPendingList();
+        })
     }
 
-    componentDidUpdate  (prevProps, prevState) {
-         if (prevProps.route.params.requestPendingList !== this.props.route.params.requestPendingList) {
-            this.setState(previousState => ({ 
-                requestList: this.props.route.params.requestPendingList? this.props.route.params.requestPendingList : [],
-            }));
-        }
-    }
+    // componentDidUpdate  (prevProps, prevState) {
+    //      if (prevProps.route.params !== this.props.route.params) {
+    //         this.setState(previousState => ({ 
+    //             dataChanged: !this.state.dataChanged,
+    //         }));
+    //     }
+    // }
 
 
-    CallApiGetRequestPendingList(){
-        fetch(getApiUrl()+"/request/list")
+
+
+    callApiGetRequestPendingList(){
+        fetch(getApiUrl()+"/users/nurses/find-request", {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer '+this.props.token,
+            }
+        })
         .then(res => res.json())
         .then(
             (result) => {
-            this.setState(previousState => ({
-                requestList: result,
-            }));
+                console.log(result)
+                this.setState(previousState => ({
+                    requestList: result,
+                    dataChanged: !this.state.dataChanged,
+                }));
             },            
             (error) => {
-            this.setState({
-                error
-            });
+                console.log(error)
             }
         )
     }
 
+    
+    callApiTestList = async () => {
+        fetch(getApiUrl()+"/test-types/type-test")
+        .then(res => res.json())
+        .then(
+            (result) => {
+            this.setState(previousState => ({
+                testsList: result,
+            }));
+            },            
+            (error) => {
+                console.log(error)
+            }
+        )  
+    }
 
     sortByCreateTime(){
         const _requestList = this.state.requestList;
-        _requestList.sort((a, b) => a.request_createTime.localeCompare(b.request_createTime))
+        if (_requestList != null) _requestList.sort((a, b) => a.requestCreatedTime.localeCompare(b.requestCreatedTime))
         return _requestList;
     }
 
     sortByAppointmentTime(){
         const _requestList = this.state.requestList;
-        _requestList.sort((a, b) => a.appoint_date.localeCompare(b.appoint_date))
+        if (_requestList != null) _requestList.sort((a, b) => a.requestMeetingTime.localeCompare(b.requestMeetingTime))
         return _requestList;
     }
 
@@ -119,23 +150,25 @@ export default class RequestListPendingScreen extends Component {
                                 }}
                                 showsVerticalScrollIndicator={false}
                                 data={this.state.Button1Selected ? this.sortByCreateTime(): this.sortByAppointmentTime()}
+                                extraData={this.state.dataChanged}
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={({item}) => {
                                         return (
                                             <View>                                
                                             <RequestListPendingItem
-                                                request_createTime={item.request_createTime}
-                                                cust_name={item.cust_name}
-                                                cust_phone={item.cust_phone}
-                                                cust_DOB={item.cust_DOB}
-                                                appoint_address={item.appoint_address}
-                                                appoint_date={item.appoint_date}
-                                                nurse_name={item.nurse_name}
-                                                nurse_id={item.nurse_id}
-                                                selectedTest={item.selectedTest}
-                                                req_amount={item.req_amount}
-                                                req_status={item.req_status}
-                                                testList={testList}
+                                                requestId={item.requestID}
+                                                request_createTime={item.requestCreatedTime}
+                                                cust_name={item.customerName}
+                                                cust_phone={item.customerPhoneNumber}
+                                                cust_DOB={item.customerDOB}
+                                                appoint_address={item.requestAddress}
+                                                appoint_date={item.requestMeetingTime}
+                                                nurse_name={item.nurseName}
+                                                nurse_id={item.nurseID}
+                                                selectedTest={item.lsSelectedTest}
+                                                req_amount={item.requestAmount}
+                                                req_status={item.requestStatus}
+                                                testList={this.state.testsList}
                                                 navigation={this.props.navigation}                                                
                                             />   
                                             </View>                             
@@ -151,6 +184,22 @@ export default class RequestListPendingScreen extends Component {
         );
     }
 }
+const mapStateToProps = (state) => {
+    return {
+        token: state.login.token,
+        customerInfor: state.loadCustomer.customerInfor,
+        isLoadSuccess: state.loadCustomer.isLoadSuccess,
+        loadError: state.loadCustomer.LoadError,
+        token: state.login.token
+    };
+}
+const mapStateToDispatch = (dispatch) => {
+    return {
+        load: (customerInfor) => dispatch(loadCustomerInfor(customerInfor)),
+    };
+}
+
+export default connect(mapStateToProps, mapStateToDispatch)(RequestListPendingScreen);
 
 
 

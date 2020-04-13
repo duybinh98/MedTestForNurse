@@ -1,22 +1,24 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Dimensions, Text, TextInput, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import { CommonActions } from '@react-navigation/native';
+import { connect } from 'react-redux';
 import ScreenTopMenuBack from './../Common/ScreenTopMenuBack';
 import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import TestCategoryItem from './TestCategoryItem'
 import TestViewItem from './TestViewItem'
 import testList from './../../Data/Test'
-import { convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor } from './../Common/CommonFunction'
+import { getApiUrl, convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor } from './../Common/CommonFunction'
 
-export default class RequestViewScreen extends Component {
+class RequestViewScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            requestId: this.props.route.params.requestId ? this.props.route.params.requestId : '-1',
             name: this.props.route.params.name ? this.props.route.params.name : 'Nguyễn Văn A',
             dob: this.props.route.params.dob ? this.props.route.params.dob : '01/01/1970',
             phone: this.props.route.params.phone ? this.props.route.params.phone : '0123456789',
             address: this.props.route.params.address ? this.props.route.params.address : 'Số 123 đường abc, xyz',
             date: this.props.route.params.date ? this.props.route.params.date : '20/20/2020',
-            time: this.props.route.params.freeTime ? this.props.route.params.freeTime : '17h00',
             status: this.props.route.params.status ? this.props.route.params.status : 'Đang đợi lấy mẫu',
             statusName: this.props.route.params.status ? getStateName(this.props.route.params.status) : 'Đang đợi lấy mẫu',
             statusColor: this.props.route.params.status ? getStateColor(this.props.route.params.status) : '#7ab648',
@@ -27,19 +29,22 @@ export default class RequestViewScreen extends Component {
 
         };
         this.isSelected = this.isSelected.bind(this);
+        this.onAcceptRequest = this.onAcceptRequest.bind(this);
+        this.onReleaseRequest = this.onReleaseRequest.bind(this);
+        this.onTakingSample = this.onTakingSample.bind(this);
+        this.onLostSample = this.onLostSample.bind(this);
         this.onLeftButtonPress = this.onLeftButtonPress.bind(this);
         this.onRightButtonPress = this.onRightButtonPress.bind(this);
     }
     componentDidUpdate(prevProps, prevState) {
-        //fix to id later
-        if (prevProps.route.params.name !== this.props.route.params.name) {
+        if (prevProps.route.params !== this.props.route.params) {
             this.setState(previousState => ({
+                requestId: this.props.route.params.requestId ? this.props.route.params.requestId : '-1',
                 name: this.props.route.params.name ? this.props.route.params.name : 'Nguyễn Văn A',
                 dob: this.props.route.params.dob ? this.props.route.params.dob : '01/01/1970',
                 phone: this.props.route.params.phone ? this.props.route.params.phone : '0123456789',
                 address: this.props.route.params.address ? this.props.route.params.address : 'Số 123 đường abc, xyz',
                 date: this.props.route.params.date ? this.props.route.params.date : '20/20/2020',
-                time: this.props.route.params.freeTime ? this.props.route.params.freeTime : '17h00',
                 status: this.props.route.params.status ? this.props.route.params.status : 'Đang đợi lấy mẫu',
                 statusName: this.props.route.params.status ? getStateName(this.props.route.params.status) : 'Đang đợi lấy mẫu',
                 statusColor: this.props.route.params.status ? getStateColor(this.props.route.params.status) : '#7ab648',
@@ -56,6 +61,118 @@ export default class RequestViewScreen extends Component {
     componentDidMount() {
 
     }
+
+    onAcceptRequest(){
+        fetch(getApiUrl()+"/requests/update/"+this.state.requestId, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer '+this.props.token,
+                },
+                body: JSON.stringify({
+                    status: 'accepted',
+                    userID: this.props.customerInfor.id,
+                    note: 'I want to accept this request',
+                }),
+                })
+        .then(res => res.json())
+        .then(
+            (result) => {
+                console.log(result)
+                this.props.navigation.dispatch(
+                CommonActions.navigate({
+                    name: 'RequestListProcessingScreen',
+                    params: {
+                    },
+                }))  
+            },            
+            (error) => {
+                console.log(error)
+            }
+        )  
+    }
+
+
+    onReleaseRequest(){
+        fetch(getApiUrl()+"/requests/update/"+this.state.requestId, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer '+this.props.token,
+                },
+                body: JSON.stringify({
+                    status: 'pending',
+                    userID: this.props.customerInfor.id,
+                    note: 'I want to release this request',
+                }),
+                })
+        .then(res => res.json())
+        .then(
+            (result) => {
+                console.log(result)
+                this.props.navigation.dispatch(
+                CommonActions.navigate({
+                    name: 'RequestListPendingScreen',
+                    params: {
+                    },
+                }))  
+            },            
+            (error) => {
+                console.log(error)
+            }
+        )  
+    }
+
+
+
+    onTakingSample(){
+        fetch(getApiUrl()+"/requests/update/"+this.state.requestId, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer '+this.props.token,
+                },
+                body: JSON.stringify({
+                    status: 'transporting',
+                    userID: this.props.customerInfor.id,
+                    note: 'I have taken sample and transport it to coordinator',
+                }),
+                })
+        .then(res => res.json())
+        .then(
+            (result) => {
+                console.log(result)
+                this.props.navigation.dispatch(
+                CommonActions.navigate({
+                    name: 'RequestListProcessingScreen',
+                    params: {
+                    },
+                }))  
+            },            
+            (error) => {
+                console.log(error)
+            }
+        )  
+    }
+
+    onLostSample(){
+        this.props.navigation.dispatch(
+            CommonActions.navigate({
+                name: 'CancelRequestScreen',
+                params: {
+                    requestId: this.state.requestId,
+                    name: this.state.name,
+                    date: this.state.date,
+                    nurseId: this.props.customerInfor.id,
+                    backScreen:'RequestListProcessingScreen',
+                    token: this.props.token,
+                },
+            }))  
+    }
+
 
     getLeftButtonName(status) {
         switch (status) {
@@ -115,13 +232,13 @@ export default class RequestViewScreen extends Component {
     onLeftButtonPress() {
         switch (this.state.status) {
             case 'pending':
-                this.props.navigation.goBack();
+                this.onAcceptRequest();
                 break;
             case 'accepted':
-                this.props.navigation.goBack();
+                this.onReleaseRequest();
                 break;
             case 'transporting':
-                this.props.navigation.goBack();
+                this.onLostSample();
                 break;
             case 'waitingforresult':
                 this.props.navigation.goBack();
@@ -144,7 +261,7 @@ export default class RequestViewScreen extends Component {
                 this.props.navigation.goBack();
                 break;
             case 'accepted':
-                this.props.navigation.goBack();
+                this.onTakingSample();
                 break;
             case 'transporting':
                 this.props.navigation.goBack();
@@ -184,7 +301,7 @@ export default class RequestViewScreen extends Component {
                     }}
                 >
                     <View style={styles.titleArea}>
-                        <Text style={{ fontSize: 22, color: '#25345D' }}>Đặt xét nghiệm</Text>
+                        <Text style={{ fontSize: 22, color: '#25345D' }}>Đơn xét nghiệm</Text>
                     </View>
                     <View style={styles.infoArea}>
                         <View style={styles.textContainer}>
@@ -226,20 +343,12 @@ export default class RequestViewScreen extends Component {
                                 <Text style={[styles.textInfor, { color: this.state.statusColor }]} >{this.state.statusName}</Text>
                             </View>
                         </View>
-                        <View style={styles.doubleContainer}>
-                            <View style={{
-                                width: 205
-                            }}>
-                                <Text style={styles.textInfor} >Y tá: {this.state.nurseName}</Text>
-                            </View>
-                            <View style={{
-                                width: 110
-                            }}>
-                                <TouchableOpacity style={[styles.btnConfirm, { height: 26, width: 100 }]} onPress={() => this.props.navigation.navigate('CustomerInformation')}>
-                                    <Text style={[styles.textBtn, { fontSize: 12 }]}>Xem thông tin</Text>
-                                </TouchableOpacity>
-                            </View>
+                        {this.state.status !== 'pending' ? this.state.status !== 'coordinatorlostsample'?
+                        <View style={styles.textContainer}>
+                            <Text style={styles.textInfor} >Y tá: {this.state.nurseName}</Text>
                         </View>
+                        : null : null
+                        }
                     </View>
                     <View style={styles.TestListAreaBackground}>
                         <View
@@ -268,15 +377,13 @@ export default class RequestViewScreen extends Component {
                     </View>
                     <View style={styles.buttonContainer}>
                         {this.state.leftButtonText ?
-                            <TouchableOpacity style={styles.btnConfirm}>
-                                <Text style={styles.textBtn}
-                                    onPress={() => this.onLeftButtonPress()}
-                                >{this.state.leftButtonText}</Text>
+                            <TouchableOpacity style={styles.btnConfirm} onPress={() => this.onLeftButtonPress()}>
+                                <Text style={styles.textBtn}> {this.state.leftButtonText}</Text>
                             </TouchableOpacity>
                             : <View />
                         }
                         <TouchableOpacity style={styles.btnConfirm} onPress={() => this.onRightButtonPress()}>
-                            <Text style={styles.textBtn} >{this.state.rightButtonText}</Text>
+                            <Text style={styles.textBtn}> {this.state.rightButtonText}</Text>
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -285,6 +392,23 @@ export default class RequestViewScreen extends Component {
         );
     }
 }
+const mapStateToProps = (state) => {
+    return {
+        token: state.login.token,
+        customerInfor: state.loadCustomer.customerInfor,
+        isLoadSuccess: state.loadCustomer.isLoadSuccess,
+        loadError: state.loadCustomer.LoadError
+    };
+}
+const mapStateToDispatch = (dispatch) => {
+    return {
+        load: (customerInfor) => dispatch(loadCustomerInfor(customerInfor)),
+    };
+}
+
+export default connect(mapStateToProps, mapStateToDispatch)(RequestViewScreen);
+
+
 
 
 const styles = StyleSheet.create({

@@ -9,7 +9,7 @@ export default class ScreenTopMenu extends Component {
                 <Icon
                     name='menu'
                     type='entypo'
-                    color='#0A6ADA'
+                    color={iconColor}
                     size= {40}
                     iconStyle={[styles.button,{marginLeft:20}]}
                     onPress= {() => {
@@ -30,6 +30,8 @@ export default class ScreenTopMenu extends Component {
     }
 }
 
+// const iconColor = '#0A6ADA'
+const iconColor = 'white'
 const styles = StyleSheet.create({
     menuArea:{
         height:50, 

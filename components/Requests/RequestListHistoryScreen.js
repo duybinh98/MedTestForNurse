@@ -1,66 +1,98 @@
 import React, {Component} from 'react';
 import {View, StyleSheet, Dimensions, Text, TouchableOpacity, ScrollView, FlatList} from 'react-native';
+import { connect } from 'react-redux';
 import { CommonActions } from '@react-navigation/native';
 import ScreenTopMenuBack from './../Common/ScreenTopMenuBack';
 import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import RequestListPendingItem from './RequestListPendingItem';
 import requestsList from './../../Data/RequestsList'
 import testList from './../../Data/Test'
+import {getApiUrl} from './../Common/CommonFunction'
 
 
-export default class RequestListHistoryScreen extends Component {
+class RequestListHistoryScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            customerId: this.props.customerInfor? this.props.customerInfor.id: '-1',
             isRightButtonSelected: false,
             Button1Pressed: true,
             Button2Pressed: false,
             dataChanged: true,
-            requestList: this.props.route.params.requestHistoryList? this.props.route.params.requestHistoryList : requestsList,
+            requestList: [],
+            testsList: [],
         };
         this.sortByCreateTime = this.sortByCreateTime.bind(this);
         this.sortByCompletedTime = this.sortByCompletedTime.bind(this);
     }
     
     componentDidMount(){
-        
+        this.callApiGetRequestHistoryList();
+        this.callApiTestList();
+        this.props.navigation.addListener("focus", () => {
+            this.callApiGetRequestHistoryList();
+        })
     }
 
-    componentDidUpdate  (prevProps, prevState) {
-         if (prevProps.route.params.requestHistoryList !== this.props.route.params.requestHistoryList) {
-            this.setState(previousState => ({ 
-                requestList: this.props.route.params.requestHistoryList? this.props.route.params.requestHistoryList : [],
-            }));
-        }
+    // componentDidUpdate  (prevProps, prevState) {
+    //      if (prevProps.route.params.requestHistoryList !== this.props.route.params.requestHistoryList) {
+    //         this.setState(previousState => ({ 
+    //             requestList: this.props.route.params.requestHistoryList? this.props.route.params.requestHistoryList : [],
+    //         }));
+    //     }
+    // }
+
+    callApiGetRequestHistoryList(){
+        fetch(getApiUrl()+'/users/nurses/'+this.state.customerId+'/list/request-completed', {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer '+this.props.token,
+            }
+        })
+        .then(res => res.json())
+        .then(
+            (result) => {
+                console.log(result)
+                result.message ? null: 
+                this.setState(previousState => ({
+                    requestList: result,
+                    dataChanged: !this.state.dataChanged,
+                }));
+            },            
+            (error) => {
+                console.log(error)
+            }
+        )
     }
 
-    CallApiGetRequestPendingList(){
-        fetch(getApiUrl()+"/request/list")
+    
+    callApiTestList = async () => {
+        fetch(getApiUrl()+"/test-types/type-test")
         .then(res => res.json())
         .then(
             (result) => {
             this.setState(previousState => ({
-                requestList: result,
+                testsList: result,
             }));
             },            
             (error) => {
-            this.setState({
-                error
-            });
+                console.log(error)
             }
-        )
+        )  
     }
 
 
     sortByCreateTime(){
         const _requestList = this.state.requestList;
-        _requestList.sort((a, b) => a.request_createTime.localeCompare(b.request_createTime))
+        _requestList.sort((a, b) => a.requestCreatedTime.localeCompare(b.requestCreatedTime))
         return _requestList;
     }
 
     sortByCompletedTime(){
         const _requestList = this.state.requestList;
-        _requestList.sort((a, b) => a.appoint_date.localeCompare(b.appoint_date))
+        _requestList.sort((a, b) => a.requestMeetingTime.localeCompare(b.requestMeetingTime))
         return _requestList;
     }
 
@@ -81,25 +113,27 @@ export default class RequestListHistoryScreen extends Component {
                                 marginTop:10
                                 }}
                                 showsVerticalScrollIndicator={false}
-                                data={this.state.Button1Pressed? this.sortByCreateTime(): this.sortByCompletedTime()}
+                                //data={this.state.Button1Pressed? this.sortByCreateTime(): this.sortByCompletedTime()}
+                                data={this.state.requestList}
                                 extraData={this.state.dataChanged} 
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={({item}) => {
                                         return (
                                             <View>                                
                                             <RequestListPendingItem
-                                                request_createTime={item.request_createTime}
-                                                cust_name={item.cust_name}
-                                                cust_phone={item.cust_phone}
-                                                cust_DOB={item.cust_DOB}
-                                                appoint_address={item.appoint_address}
-                                                appoint_date={item.appoint_date}
-                                                nurse_name={item.nurse_name}
-                                                nurse_id={item.nurse_id}
-                                                selectedTest={item.selectedTest}
-                                                req_amount={item.req_amount}
-                                                req_status={item.req_status}
-                                                testList={testList}
+                                                requestId={item.requestID}
+                                                request_createTime={item.requestCreatedTime}
+                                                cust_name={item.customerName}
+                                                cust_phone={item.customerPhoneNumber}
+                                                cust_DOB={item.customerDOB}
+                                                appoint_address={item.requestAddress}
+                                                appoint_date={item.requestMeetingTime}
+                                                nurse_name={item.nurseName}
+                                                nurse_id={item.nurseID}
+                                                selectedTest={item.lsSelectedTest}
+                                                req_amount={item.requestAmount}
+                                                req_status={item.requestStatus}
+                                                testList={this.state.testsList}
                                                 navigation={this.props.navigation}                                                
                                             />   
                                             </View>                             
@@ -115,6 +149,22 @@ export default class RequestListHistoryScreen extends Component {
         );
     }
 }
+const mapStateToProps = (state) => {
+    return {
+        token: state.login.token,
+        customerInfor: state.loadCustomer.customerInfor,
+        isLoadSuccess: state.loadCustomer.isLoadSuccess,
+        loadError: state.loadCustomer.LoadError,
+        token: state.login.token
+    };
+}
+const mapStateToDispatch = (dispatch) => {
+    return {
+        load: (customerInfor) => dispatch(loadCustomerInfor(customerInfor)),
+    };
+}
+
+export default connect(mapStateToProps, mapStateToDispatch)(RequestListHistoryScreen);
 
 
 

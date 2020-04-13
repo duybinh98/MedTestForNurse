@@ -89,7 +89,7 @@ export default class TestCategoryItem extends Component {
                                     testName={item.testName}
                                     testPrice={item.price}
                                     testID={item.testID}
-                                    backgroundColor={index-countHide % 2 == 0 ? '#EEE': '#FFF'}
+                                    backgroundColor={(index-countHide) % 2 == 0 ? '#EEE': '#FFF'}
                                     /> : null :
                                     null 
                                      : null}    

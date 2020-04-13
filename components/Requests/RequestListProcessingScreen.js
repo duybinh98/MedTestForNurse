@@ -1,21 +1,25 @@
 import React, {Component} from 'react';
 import {View, StyleSheet, Dimensions, Text, TouchableOpacity, ScrollView, FlatList} from 'react-native';
+import { connect } from 'react-redux';
 import ScreenTopMenuBack from './../Common/ScreenTopMenuBack';
 import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import RequestListPendingItem from './RequestListPendingItem';
 import requestsList from './../../Data/RequestsList'
 import testList from './../../Data/Test'
+import {getApiUrl} from './../Common/CommonFunction'
 
 
-export default class RequestListProcessingScreen extends Component {
+class RequestListProcessingScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            customerId: this.props.customerInfor? this.props.customerInfor.id: '-1',
             isRightButtonSelected: false,
             Button1Pressed:true,
             Button2Pressed:false,
             Button3Pressed:false,
             dataChanged: true,
+            testsList: [],
             requestList: this.props.route.params.requestProcessingList? this.props.route.params.requestProcessingList : [],
             requestViewList: this.props.route.params.requestProcessingList? this.props.route.params.requestProcessingList : [],
         };
@@ -25,15 +29,59 @@ export default class RequestListProcessingScreen extends Component {
     }
     
     componentDidMount(){
-        this.getAcceptedList();
+        this.callApiGetRequestProcessingList();
+        this.callApiTestList();
+        this.props.navigation.addListener("focus", () => {
+            this.callApiGetRequestProcessingList();
+        })
     }
 
-    componentDidUpdate  (prevProps, prevState) {
-         if (prevProps.route.params.requestProcessingList !== this.props.route.params.requestProcessingList) {
-            this.setState(previousState => ({ 
-                requestList: this.props.route.params.requestProcessingList? this.props.route.params.requestProcessingList : [],
+    // componentDidUpdate  (prevProps, prevState) {
+    //      if (prevProps.route.params !== this.props.route.params) {
+    //         this.setState(previousState => ({ 
+    //             dataChanged: !this.state.dataChanged,
+    //         }));
+    //     }
+    // }
+
+    callApiGetRequestProcessingList(){
+        fetch(getApiUrl()+'/users/nurses/'+this.state.customerId+'/list/handling', {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer '+this.props.token,
+            }
+        })
+        .then(res => res.json())
+        .then(
+            (result) => {
+                console.log(result)
+                this.setState(previousState => ({
+                    requestList: result,
+                    dataChanged: !this.state.dataChanged,
+                }));
+            },            
+            (error) => {
+                console.log(error)
+            }
+        )
+    }
+
+
+    callApiTestList = async () => {
+        fetch(getApiUrl()+"/test-types/type-test")
+        .then(res => res.json())
+        .then(
+            (result) => {
+            this.setState(previousState => ({
+                testsList: result,
             }));
-        }
+            },            
+            (error) => {
+                console.log(error)
+            }
+        )  
     }
 
 
@@ -42,7 +90,7 @@ export default class RequestListProcessingScreen extends Component {
         let result = [];
         let index = _requestList.length - 1;
         while (index >= 0) {
-            if (_requestList[index].req_status === 'accepted' || _requestList[index].req_status === 'lostsample') {
+            if (_requestList[index].requestStatus === 'accepted' || _requestList[index].requestStatus === 'lostsample') {
                 result.push(_requestList[index]);
                 }
             index -= 1;
@@ -55,7 +103,7 @@ export default class RequestListProcessingScreen extends Component {
         let result = [];
         let index = _requestList.length - 1;
         while (index >= 0) {
-            if (_requestList[index].req_status === 'transporting') {
+            if (_requestList[index].requestStatus === 'transporting') {
                 result.push(_requestList[index]);
                 }
             index -= 1;
@@ -76,29 +124,7 @@ export default class RequestListProcessingScreen extends Component {
         return result;
     }
 
-
-    CallApiGetRequestPendingList(){
-        fetch(getApiUrl()+"/request/list")
-        .then(res => res.json())
-        .then(
-            (result) => {
-            this.setState(previousState => ({
-                requestList: result,
-            }));
-            },            
-            (error) => {
-            this.setState({
-                error
-            });
-            }
-        )
-    }
-
-
-
-
     render(){
-        
         return(
                 <View style={{flex:1}}>
                     <ScreenTopMenuBack navigation={this.props.navigation} backScreen="HomeScreen"></ScreenTopMenuBack>
@@ -181,18 +207,19 @@ export default class RequestListProcessingScreen extends Component {
                                         return (
                                             <View>                                
                                             <RequestListPendingItem
-                                                request_createTime={item.request_createTime}
-                                                cust_name={item.cust_name}
-                                                cust_phone={item.cust_phone}
-                                                cust_DOB={item.cust_DOB}
-                                                appoint_address={item.appoint_address}
-                                                appoint_date={item.appoint_date}
-                                                nurse_name={item.nurse_name}
-                                                nurse_id={item.nurse_id}
-                                                selectedTest={item.selectedTest}
-                                                req_amount={item.req_amount}
-                                                req_status={item.req_status}
-                                                testList={testList}
+                                                requestId={item.requestID}
+                                                request_createTime={item.requestCreatedTime}
+                                                cust_name={item.customerName}
+                                                cust_phone={item.customerPhoneNumber}
+                                                cust_DOB={item.customerDOB}
+                                                appoint_address={item.requestAddress}
+                                                appoint_date={item.requestMeetingTime}
+                                                nurse_name={item.nurseName}
+                                                nurse_id={item.nurseID}
+                                                selectedTest={item.lsSelectedTest}
+                                                req_amount={item.requestAmount}
+                                                req_status={item.requestStatus}
+                                                testList={this.state.testsList}
                                                 navigation={this.props.navigation}
                                             />   
                                             </View>                             
@@ -208,6 +235,22 @@ export default class RequestListProcessingScreen extends Component {
         );
     }
 }
+const mapStateToProps = (state) => {
+    return {
+        token: state.login.token,
+        customerInfor: state.loadCustomer.customerInfor,
+        isLoadSuccess: state.loadCustomer.isLoadSuccess,
+        loadError: state.loadCustomer.LoadError,
+        token: state.login.token
+    };
+}
+const mapStateToDispatch = (dispatch) => {
+    return {
+        load: (customerInfor) => dispatch(loadCustomerInfor(customerInfor)),
+    };
+}
+
+export default connect(mapStateToProps, mapStateToDispatch)(RequestListProcessingScreen);
 
 
 

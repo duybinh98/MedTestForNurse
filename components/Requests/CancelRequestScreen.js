@@ -3,7 +3,7 @@ import { View, StyleSheet, Dimensions, Text, TextInput, ScrollView, TouchableOpa
 import ScreenTopMenuBack from './../Common/ScreenTopMenuBack';
 import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import { CommonActions } from '@react-navigation/native';
-import { convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor } from './../Common/CommonFunction'
+import { getApiUrl, convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor } from './../Common/CommonFunction'
 // import renderField from '../../Validate/RenderField'
 import { Field, reduxForm } from 'redux-form';
 
@@ -33,18 +33,73 @@ class CancelRequestScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            name: 'Nguyễn Văn A',
-            date: '20/20/2020',
-            time: '17h00',
+            requestId: this.props.route.params.requestId ? this.props.route.params.requestId : '',
+            name: this.props.route.params.name ? this.props.route.params.name : '',
+            date: this.props.route.params.date ? this.props.route.params.date : '',
+            time: this.props.route.params.freeTime ? this.props.route.params.time : '',
+            nurseId: this.props.route.params.nurseId ? this.props.route.params.nurseId : '',
+            token: this.props.route.params.token ? this.props.route.params.token : '',
             showFooter: true,
-            buttonText: 'Hủy đơn',
+            buttonText: 'Xác nhận',
             reason: '',
         };
     }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.route.params !== this.props.route.params) {
+            this.setState(previousState => ({
+                requestId: this.props.route.params.requestId ? this.props.route.params.requestId : '',
+                name: this.props.route.params.name ? this.props.route.params.name : '',
+                date: this.props.route.params.date ? this.props.route.params.date : '',
+                time: this.props.route.params.freeTime ? this.props.route.params.time : '',
+                reason: '',
+            }));
+        }
+    }
+
     componentDidMount() {
         this.keyboardDidShowSub = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
         this.keyboardDidHideSub = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
     }
+
+    
+    onLostSamplePress(){
+        
+        console.log(this.state.requestId)
+        console.log(this.state.token)
+        console.log(this.state.nurseId)
+        console.log(this.state.reason)
+        fetch(getApiUrl()+"/requests/update/"+this.state.requestId, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: 'Bearer '+this.state.token,
+                },
+                body: JSON.stringify({
+                    status: 'lostsample',
+                    userID: this.state.nurseId,
+                    note: this.state.reason,
+                }),
+                })
+        .then(res => res.json())
+        .then(
+            (result) => {
+                console.log(result)
+                this.props.navigation.dispatch(
+                CommonActions.navigate({
+                    name: 'RequestListProcessingScreen',
+                    params: {
+                    },
+                }))  
+            },            
+            (error) => {
+                console.log(error)
+            }
+        )
+    }
+
+
     RenderFooter() {
         if (this.state.showFooter) {
             return (
@@ -67,14 +122,15 @@ class CancelRequestScreen extends Component {
         })
     };
     submit = value => {
-        this.props.navigation.dispatch(
-            CommonActions.navigate({
-                name: 'HomeScreen',
-                params: {
+        this.onLostSamplePress();
+        // this.props.navigation.dispatch(
+        //     CommonActions.navigate({
+        //         name: 'HomeScreen',
+        //         params: {
 
-                },
-            })
-        )
+        //         },
+        //     })
+        // )
     }
     render() {
         const { handleSubmit } = this.props;
@@ -101,12 +157,12 @@ class CancelRequestScreen extends Component {
                             <View style={{
                                 width: 180
                             }}>
-                                <Text style={styles.textInfor} >Ngày hẹn: {(this.state.date)}</Text>
+                                <Text style={styles.textInfor} >Ngày hẹn: {convertDateTimeToDate(this.state.date)}</Text>
                             </View>
                             <View style={{
                                 width: 120
                             }}>
-                                <Text style={styles.textInfor} >Giờ hẹn: {(this.state.time)}</Text>
+                                <Text style={styles.textInfor} >Giờ hẹn: {convertDateTimeToTime(this.state.date)}</Text>
                             </View>
                         </View>
                     </View>
