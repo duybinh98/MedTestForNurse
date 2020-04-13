@@ -60,8 +60,7 @@ class changePassword extends Component {
             .then(res => res.json())
             .then(
                 (result) => {
-                    if (result.success == "true") {
-                        // alert(result.message)
+                    if (result.changedSuccess == true) {
                         Alert.alert(
                             'Đổi mật khẩu',
                             result.message,
@@ -70,13 +69,12 @@ class changePassword extends Component {
                             CommonActions.navigate({
                                 name: 'LoginScreen',
                                 params: {
-
                                 },
                             })
                         )
                     } else {
                         Alert.alert(
-                            'Đổi mật khẩu',
+                            'Lỗi đổi mật khẩu',
                             result.message,
                         )
                     }
