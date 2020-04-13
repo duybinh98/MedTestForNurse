@@ -5,6 +5,8 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import { connect } from 'react-redux';
+import { login, logout } from './Store/Reducers/LoginReducer';
+import { loadNurseInfor } from './Store/Reducers/LoadInforReducer';
 
 import NurseInformation from './Account/NurseInformation';
 import ChangePassword from './Account/ChangePassword';
@@ -204,14 +206,14 @@ function MenuButtonLinkingContainer({ iconName, iconType, iconColor, iconSize, s
 const mapStateToProps = (state) => {
     return {
         token: state.login.token,
-        customerInfor: state.loadCustomer.customerInfor,
-        isLoadSuccess: state.loadCustomer.isLoadSuccess,
-        loadError: state.loadCustomer.LoadError
+        nurseInfor: state.loadNurse.nurseInfor,
+        isLoadSuccess: state.loadNurse.isLoadSuccess,
+        loadError: state.loadNurse.LoadError
     };
 }
 const mapStateToDispatch = (dispatch) => {
     return {
-        load: (customerInfor) => dispatch(loadCustomerInfor(customerInfor)),
+        load: (nurseInfor) => dispatch(loadCustomerInfor(nurseInfor)),
     };
 }
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
 import { TextInput, ScrollView } from 'react-native-gesture-handler';
 import { Icon } from 'react-native-elements';
 import ScreenTopMenuBack from './../Common/ScreenTopMenuBack';
@@ -7,11 +7,16 @@ import { Field, reduxForm } from 'redux-form';
 import { CommonActions } from '@react-navigation/native';
 import {getApiUrl} from './../Common/CommonFunction';
 import renderField from '../../Validate/RenderField';
+import { load as loadAccount } from '../Store/Reducers/InitialValue';
+import { loadNurseInfor } from '../Store/Reducers/LoadInforReducer';
+import { connect } from 'react-redux';
 
 
 //validate conditions
 const required = values => values ? undefined : 'Bắt buộc';
-const isWeakPassword = values => values && values.length == 6 ? undefined : 'Mật khẩu phải có 6 kí tự';
+const isWeakPassword = value => value && value.length >= 6 ? undefined : 'Mật khẩu phải có ít nhất 6 kí tự';
+const isNumber = values => values && isNaN(Number(values)) ? 'Phải nhập số' : undefined;
+const isPhonenumber = values => values && values.length == 10 ? undefined : 'Phải có 10 số';
 
 const { width: WIDTH } = Dimensions.get('window')
 
@@ -19,11 +24,20 @@ class changePassword extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            customerId:'4',
+            nurseId: this.props.nurseInforLoad.id ? this.props.nurseInforLoad.id : '-1',
+            name: this.props.nurseInforLoad ? this.props.nurseInforLoad.name : '',
+            phonenumber: this.props.nurseInforLoad ? this.props.nurseInforLoad.phoneNumber : '',
             password: '',
             newPassword: '',
         };
         this.submit = this.submit.bind(this)
+    }
+    componentWillMount = value => {
+        const nurseInfor = {
+            username: this.state.name,
+            phonenumber: this.state.phonenumber
+        }
+        this.props.load(nurseInfor)
     }
     submit = values => {
         if (values.password === values.newPassword) {
@@ -31,54 +45,58 @@ class changePassword extends Component {
         } else if (values.cfNewPassword !== values.newPassword) {
             alert("Xác nhận mật khẩu mới không đúng!")
         } else {
-            fetch(getApiUrl()+'/users/nurses/change-password/'+this.state.customerId, {
+            fetch(getApiUrl()+'/users/nurses/change-password/'+this.state.nurseId, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                    // Authorization: 'Bearer '+this.props.token,
+                    Authorization: 'Bearer '+this.props.token,
                 },
                 body: JSON.stringify({
                     oldPassword: this.state.password,
                     newPassword: this.state.newPassword,
-
                 }),
                 })
             .then(res => res.json())
             .then(
                 (result) => {
-                    this.props.navigation.dispatch(
-                        CommonActions.navigate({
-                            name: 'HomeScreen',
-                            params: {
+                    if (result.success == "true") {
+                        // alert(result.message)
+                        Alert.alert(
+                            'Đổi mật khẩu',
+                            result.message,
+                        )
+                        this.props.navigation.dispatch(
+                            CommonActions.navigate({
+                                name: 'LoginScreen',
+                                params: {
 
-                            },
-                        })
-                    )
+                                },
+                            })
+                        )
+                    } else {
+                        Alert.alert(
+                            'Đổi mật khẩu',
+                            result.message,
+                        )
+                    }
                 },
                 (error) => {
-                this.setState({                
-                    error
-                });
-                console.log(error)
+                    this.setState({
+                        error
+                    });
+                    console.log(error)
                 }
             );
-
-            // this.props.navigation.dispatch(
-            //     CommonActions.navigate({
-            //         name: 'LoginScreen',
-            //         params: {
-            //             password: this.state.password,
-            //             newPassword: this.state.newPassword,
-            //         },
-            //     })
-            // )
         }
     }
 
 
 
     render() {
+        debugger;
+        const abc = this.props.customerInfo;
+        const a = this.state.newPassword;
         const { handleSubmit } = this.props;
         return (
             <View style={styles.background}>
@@ -89,6 +107,16 @@ class changePassword extends Component {
                             <Text style={styles.logoText}>Đổi mật khẩu</Text>
                         </View>
                     </View>
+                    <Field name="username" keyboardType="default" component={renderField} iconName="rename-box"
+                        iconType="material-community" placeholder="Tên hiển thị" secureText={false}
+                        onChange={(text) => { this.setState({ name: text }) }} editable={false}
+                        validate={[required]}
+                    />
+                    <Field name="phonenumber" keyboardType="phone-pad" component={renderField} iconName="cellphone"
+                        iconType="material-community" placeholder="Số điện thoại" secureText={false}
+                        onChange={(text) => { this.setState({ phonenumber: text }) }} editable={false}
+                        validate={[required, isNumber, isPhonenumber]}
+                    />
                     <Field name="password" keyboardType="default" component={renderField} iconName="lock-question"
                         iconType="material-community" placeholder="Mật khẩu cũ" isSecureText={true}
                         onChange={(text) => { this.setState({ password: text }) }}
@@ -114,9 +142,22 @@ class changePassword extends Component {
     }
 }
 
-const ChangePasswordForm = reduxForm({
+let ChangePasswordForm = reduxForm({
     form: 'changePassword',
+    enableReinitialize: true,
 })(changePassword);
+
+ChangePasswordForm = connect(
+    state => ({
+        initialValues: state.initialValue.data,
+        token: state.login.token,
+        nurseInforLoad: state.loadNurse.nurseInfor,
+        nurseInfor: state.login.nurseInfor
+    }),
+    {
+        load: loadAccount,
+    }
+)(ChangePasswordForm);
 export default ChangePasswordForm;
 //#25345D
 //#0A6ADA

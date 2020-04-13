@@ -8,14 +8,15 @@ import { connect } from 'react-redux';
 // import action from '../Store/Action/actions';
 import { login } from '../Store/Reducers/LoginReducer';
 // import { getApiUrl } from './../Common/CommonFunction';
-import { loadCustomerInfor } from '../Store/Reducers/LoadInforReducer';
+// import { loadNurseInfor } from '../Store/Reducers/LoadInforReducer';
+import {loadNurseInfor} from '../Store/Reducers/LoadInforReducer';
 import renderField from '../../Validate/RenderField'
 
 //validate conditions
-const required = value => value ? undefined : 'Required';
-const isNumber = value => value && isNaN(Number(value)) ? 'Must be phone number' : undefined;
-const isPhonenumber = value => value && value.length == 10 ? undefined : 'Must be 10 digits';
-const isWeakPassword = value => value && value.length >= 6 ? undefined : 'Mật khẩu phải có 6 kí tự';
+const required = values => values ? undefined : 'Bắt buộc';
+const isWeakPassword = value => value && value.length >= 6 ? undefined : 'Mật khẩu phải có ít nhất 6 kí tự';
+const isNumber = values => values && isNaN(Number(values)) ? 'Phải nhập số' : undefined;
+const isPhonenumber = values => values && values.length == 10 ? undefined : 'Phải có 10 số';
 
 
 class LoginComponent extends Component {
@@ -24,8 +25,8 @@ class LoginComponent extends Component {
         this.state = {
             phoneNumber: '',
             password: '',
-
-            customerInfoFromLogin: null,
+            // customerInfoFromLogin: this.props.customerInforReducer ? this.props.customerInforReducer : null,
+            nurseInfoFromLogin: null,
         };
         this.submit = this.submit.bind(this)
     }
@@ -33,26 +34,36 @@ class LoginComponent extends Component {
     submit = value => {
         const { phoneNumber, password } = this.state;
         this.props.login(phoneNumber, password)
+        let count = 0;
+        var waitForIt = setInterval(() => {
+            if (this.props.isLoginSuccess == true || count > 50) {
+                clearInterval(waitForIt);
+            }
+            else console.log('wait')
+            count += 1
+        }, 100);
         setTimeout(() => {
-            if (this.props.customerInfoFromLogin != null ) {                
-                this.setState(previousState => ({
-                    phoneNumber: '',
-                    password: '',
-                }));
-                this.props.load(this.props.customerInfoFromLogin)
+            if (this.props.nurseInfoFromLogin != null ) {                
+                // this.setState(previousState => ({
+                //     phoneNumber: '',
+                //     password: '',
+                // }));
+                console.log('get infor success')
+                this.props.load(this.props.nurseInfoFromLogin)
                 this.props.navigation.dispatch(
                     CommonActions.navigate({
                         name: 'HomeScreen',
                         params: {
                         },
                     })
-                )                
+                )      
+                this.props.reset();          
             }  
             else {
-                // console.log('error at screen'+this.props.LoginError)
+                console.log('error at screen'+this.props.LoginError)
                 // Alert.alert(this.props.LoginError.message);
                 }
-        },2000)
+        },10000)
 
 
     }
@@ -97,12 +108,13 @@ const mapStateToProps = (state) => {
         isLoginPending: state.login.isLoginPending,
         isLoginSuccess: state.login.isLoginSuccess,
         LoginError: state.login.LoginError,
-        customerInfoFromLogin: state.login.customerInfo,
+        nurseInfoFromLogin: state.login.nurseInfor,
     };
 }
 const mapStateToDispatch = (dispatch) => {
     return {
-        load: (customerInfor) => dispatch(loadCustomerInfor(customerInfor)),
+        // load: (nurseInfor) => dispatch(loadNurseInfor(nurseInfor)),
+        load: (nurseInfor) => dispatch(loadNurseInfor(nurseInfor)),
         login: (phoneNumber, password) => dispatch(login(phoneNumber, password))
     };
 }

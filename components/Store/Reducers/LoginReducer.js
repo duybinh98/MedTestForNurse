@@ -1,11 +1,14 @@
 import Promise from 'es6-promise';
-import {getApiUrl} from './../../Common/CommonFunction'
+import { getApiUrl } from './../../Common/CommonFunction'
 // import actions from "redux-form/lib/actions"
 // import action from '../Action/actions';
 
 const LOGIN_PENDING = 'LOGIN_PENDING';
 const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 const LOGIN_ERROR = 'LOGIN_ERROR';
+const LOGOUT_PENDING = 'LOGOUT_PENDING';
+const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
+const LOGOUT_ERROR = 'LOGOUT_ERROR'
 
 function setLoginPending(isLoginPending) {
     return {
@@ -13,12 +16,12 @@ function setLoginPending(isLoginPending) {
         isLoginPending
     };
 }
-function setLoginSuccess(isLoginSuccess, setToken, setCustomerInfo) {
+function setLoginSuccess(isLoginSuccess, setToken, setNurseInfor) {
     return {
         type: LOGIN_SUCCESS,
         isLoginSuccess,
         setToken,
-        setCustomerInfo
+        setNurseInfor
     };
 }
 function setLoginError(LoginError) {
@@ -27,39 +30,73 @@ function setLoginError(LoginError) {
         LoginError
     };
 }
+function setLogoutError(LogoutError) {
+    return {
+        type: LOGOUT_ERROR,
+        LogoutError
+    };
+}
+function setLogoutPending(isLogoutPending) {
+    return {
+        type: LOGOUT_PENDING,
+        isLogoutPending,
+    }
+}
+function setLogoutSuccess(isLoginSuccess, setToken, setNurseInfor) {
+    return {
+        type: LOGOUT_SUCCESS,
+        isLoginSuccess,
+        setToken,
+        setNurseInfor
+    };
+}
 
-
+export function logout() {
+    return dispatch => {
+        dispatch(setLogoutPending(true));
+        dispatch(setLogoutError(null));
+        sendLogoutRequest()
+            .then(success => {
+                dispatch(setLogoutPending(false));
+                dispatch(setLogoutSuccess(false, null, null));
+            })
+            .catch(error => {
+                dispatch(setLogoutPending(false));
+                dispatch(setLogoutError(error));
+            })
+    }
+}
 export function login(phonenumber, password) {
     return dispatch => {
         dispatch(setLoginPending(true));
         dispatch(setLoginSuccess(false));
         dispatch(setLoginError(null));
         sendLoginRequest(phonenumber, password)
-        .then(success => {
-            dispatch(setLoginPending(false));
-            dispatch(setLoginSuccess(true,success.token,success.customerInfo));
-        })
-        .catch(err => {
-            dispatch(setLoginPending(false));
-            dispatch(setLoginError(err));
-        })
-    }    
+            .then(success => {
+                dispatch(setLoginPending(false));
+                dispatch(setLoginSuccess(true, success.token, success.nurseInfor));
+            })
+            .catch(err => {
+                dispatch(setLoginPending(false));
+                dispatch(setLoginError(err));
+            })
+    }
 }
 
 export default function reducer(state = {
     isLoginPending: false,
     isLoginSuccess: false,
     LoginError: null,
-    token : null,
-    customerInfo: null,
+    token: null,
+    nurseInfor : null,
 }, action) {
     switch (action.type) {
         case LOGIN_SUCCESS:
             return {
                 ...state,
                 isLoginSuccess: action.isLoginSuccess,
-                token : action.setToken,
-                customerInfo: action.setCustomerInfo
+                token: action.setToken,
+                nurseInfor: action.setNurseInfor
             };
         case LOGIN_PENDING:
             return {
@@ -77,45 +114,41 @@ export default function reducer(state = {
 }
 
 function sendLoginRequest(phoneNumber, password) {
-    return new Promise((resolve, reject) => {    
+    return new Promise((resolve, reject) => {
 
-    fetch(getApiUrl()+'/users/login', {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            phoneNumber: phoneNumber,
-            password: password,
-        }),
-        })
-        .then(res => res.json())
-        .then(
-            (result) => {
-                // console.dir(JSON.stringify(result));
-                const token=result.token;
-                const customerInfo = result.customerInfo;
-                return resolve({token,customerInfo});
+        fetch(getApiUrl() + '/users/nurses/login', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+
             },
-            (error) => {
-                return reject(new Error(error));
-            }
-        );
-           
-// fetch(getApiUrl()+"/users/customers/detail/1")
-//         .then(res => res.json())
-//         .then(
-//             (result) => {
-//                 const token='12345';
-//                 const customerInfo = result;
-//                 return resolve({token,customerInfo});
-//             },            
-//             (error) => {
-//                 return reject(new Error(error));
-//             }
-//         ) 
-//          return reject(new Error('Invalid email or password'));
-        
+            body: JSON.stringify({
+                phoneNumber: phoneNumber,
+                password: password,
+                role : "NURSE"
+            }),
+        })
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    if (result.message) {
+                        alert(result.message)
+                        return reject(new Error(result.message));
+                    } else {
+                        const token = result.token;
+                        const nurseInfor = result.userInfo;
+                        return resolve({ token, nurseInfor });
+                    }
+                },
+                (error) => {
+                    return reject(new Error(error));
+                }
+            );
+    });
+}
+function sendLogoutRequest() {
+    return new Promise((resolve, reject) => {
+        return resolve(true);
     });
 }

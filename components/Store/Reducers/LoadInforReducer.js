@@ -1,11 +1,8 @@
 import Promise from 'es6-promise';
-// import actions from "redux-form/lib/actions"
-// import action from '../Action/actions';
 
 const LOAD_PENDING = 'LOAD_PENDING';
 const LOAD_SUCCESS = 'LOAD_SUCCESS';
 const LOAD_ERROR = 'LOAD_ERROR';
-// const LOAD_INFOR = 'LOAD_INFOR';
 
 function setLoadPending(isLoadPending) {
     return {
@@ -13,11 +10,11 @@ function setLoadPending(isLoadPending) {
         isLoadPending
     };
 }
-function setLoadSuccess(isLoadSuccess, customerInfor) {
+function setLoadSuccess(isLoadSuccess, nurseInfor) {
     return {
         type: LOAD_SUCCESS,
         isLoadSuccess,
-        customerInfor : customerInfor
+        nurseInfor : nurseInfor
     };
 }
 function setLoadError(LoadError) {
@@ -27,9 +24,9 @@ function setLoadError(LoadError) {
     };
 }
 
-function loadCustomerFromState(customerInfor) {
+function loadNurseFromState(nurseInfor) {
     return new Promise((resolve, reject) => {
-        if (customerInfor !== null) {
+        if (nurseInfor !== null) {
             return resolve(true);
         } else {
             return reject(new Error('Load customer information failed'));
@@ -37,7 +34,7 @@ function loadCustomerFromState(customerInfor) {
     }); 
 }
 
-// function loadCustomerFromState(customerInfor) {
+// function loadCustomerFromState(nurseInfor) {
 //     setTimeout(() => {
 //         try {
 //             return new Promise.resolve(true);
@@ -46,16 +43,16 @@ function loadCustomerFromState(customerInfor) {
 //         }
 //     },3000)   
 // }
-export function loadCustomerInfor(customerInfor){
+export function loadNurseInfor(nurseInfor){
     return dispatch => {
         dispatch(setLoadPending(true));
         // dispatch(setLoadSuccess(false,null));
         dispatch(setLoadError(null));
-        // dispatch(setCustomerInfor(null));
-        loadCustomerFromState(customerInfor)
+        // dispatch(setnurseInfor(null));
+        loadNurseFromState(nurseInfor)
         .then(success => {
             dispatch(setLoadPending(false));
-            dispatch(setLoadSuccess(true,customerInfor))
+            dispatch(setLoadSuccess(true,nurseInfor))
         })
         .catch(err => {
             dispatch(setLoadPending(false));
@@ -68,14 +65,14 @@ export default function reducer(state = {
     isLoadPending: false,
     isLoadSuccess: false,
     LoadError: null,
-    customerInfor : null
+    nurseInfor : null
 }, action) {
     switch (action.type) {
         case LOAD_SUCCESS:
             return {
                 ...state,
                 isLoadSuccess: action.isLoadSuccess,
-                customerInfor : action.customerInfor
+                nurseInfor : action.nurseInfor
             };
         case LOAD_PENDING:
             return {

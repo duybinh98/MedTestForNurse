@@ -11,7 +11,7 @@ export function convertDateAndTimeToDateTime(inputDate,inputTime){
     return inputDate.substring(6,10)+'-'+inputDate.substring(3,5)+'-'+inputDate.substring(0,2)+'T'+inputTime+':00.000+0000'
 }
 export function getApiUrl(){
-    return "http://192.168.1.11:8080";
+    return "http://192.168.1.6:8080";
 }
 
 export function getStateName(status){

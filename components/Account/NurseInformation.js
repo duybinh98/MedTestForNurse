@@ -8,7 +8,7 @@ import { getApiUrl, convertDateTimeToDate } from '../Common/CommonFunction';
 import { connect } from 'react-redux';
 import { login } from '../Store/Reducers/LoginReducer';
 // import { getApiUrl } from './../Common/CommonFunction';
-import { loadCustomerInfor } from '../Store/Reducers/LoadInforReducer';
+import { loadNurseInfor } from '../Store/Reducers/LoadInforReducer';
 
 
 const { width: WIDTH } = Dimensions.get('window')
@@ -16,30 +16,54 @@ class nurseInformation extends Component {
     constructor(props) {
         super(props)
         this.state = {            
-            customerInfor: null,
-            token: null,
+            nurseInfor: null,
+            nurseId: this.props.nurseInfor ? this.props.nurseInfor.id : '-1',
+            token: this.props.token ? this.props.token : null,
         };
     }
     
     componentWillMount() {
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps !== this.props) {
-            // console.log(this.props.token)
-            this.setState({
-                token: this.props.token,
-                customerInfor: this.props.customerInfor
-            })
-        }
-    }
+    // componentDidUpdate(prevProps, prevState) {
+    //     if (prevProps !== this.props) {
+    //         this.setState(previousState => ({
+    //             name: this.props.route.params.nurseInfor ? this.props.route.params.nurseInfor.name : "",
+    //             token: this.props.token,
+    //             nurseInfor: this.props.route.params.nurseInfor ? this.props.route.params.nurseInfor : this.state.nurseInfor
+    //         }));
+    //     }
+    // }
     componentDidMount() {
-        this.setState({
-            token: this.props.token,
-            customerInfor: this.props.customerInfor
-        })
+        this.callApinurseInfor();
     }
+    callApinurseInfor() {
+        fetch(getApiUrl() + '/users/nurses/detail/' + this.state.nurseId, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + this.props.token,
+            }
+        })
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    if (result.message) {
+                        alert(result.message);
+                    } else {
+                        console.log(result)
+                        this.setState(previousState => ({
+                            nurseInfor: result,
+                        }));
+                    }
+                },
+                (error) => {
+                    console.log(error)
+                }
+            )
 
+    }
     render() {
         const { gender } = this.state;
         return (
@@ -48,7 +72,7 @@ class nurseInformation extends Component {
                 <View>
                     <View style={styles.logoContainer}>
                         <ImageBackground
-                            source={{ uri: this.state.customerInfor?this.props.customerInfor.image:'' }}
+                            source={{ uri: this.state.nurseInfor?this.props.nurseInfor.image:'' }}
                             style={styles.logo} >
                             <TouchableOpacity><Icon
                                 name='camera'
@@ -62,40 +86,27 @@ class nurseInformation extends Component {
                     </View>
                 </View>
                 <View style={styles.textContainer}>
-                    {/* <Text style={styles.textInfor} >Tên hiển thị:  {this.props.customerInfoFromLogin?this.props.customerInfoFromLogin.name:""}</Text> */}
-                    <Text style={styles.textInfor} >Tên hiển thị:  {this.state.customerInfor?this.props.customerInfor.name:""}</Text>
+                    <Text style={styles.textInfor} >Tên hiển thị:  {this.state.nurseInfor?this.state.nurseInfor.name:""}</Text>
                 </View>
                 <View style={styles.textContainer}>
-                    <Text style={styles.textInfor} >Số điện thoại: {this.state.customerInfor?this.props.customerInfor.phoneNumber:""}</Text>
+                    <Text style={styles.textInfor} >Số điện thoại: {this.state.nurseInfor?this.state.nurseInfor.phoneNumber:""}</Text>
                 </View>
                 <View style={styles.dobGenderContainer}>
                     <View style={styles.dobContainer}>
-                        <Text style={styles.textInfor} >Ngày sinh: {this.state.customerInfor?convertDateTimeToDate(this.props.customerInfor.dob):""}</Text>
+                        <Text style={styles.textInfor} >Ngày sinh: {this.state.nurseInfor?convertDateTimeToDate(this.state.nurseInfor.dob):""}</Text>
                     </View>
                     <View style={styles.genderContainer}>
-                        <Text style={styles.textInfor} >Giới tính: {this.state.customerInfor?this.state.customerInfor.gender? "Nữ" : "Nam":''}</Text>
+                        <Text style={styles.textInfor} >Giới tính: {this.state.nurseInfor?this.state.nurseInfor.gender === 0? "Nữ" : "Nam":''}</Text>
                     </View>
                 </View>
 
                 <View style={styles.textContainer}>
-                    <Text style={styles.textInfor} >Địa chỉ: {this.state.customerInfor?this.state.customerInfor.address:''}</Text>
+                    <Text style={styles.textInfor} >Địa chỉ: {this.state.nurseInfor?this.state.nurseInfor.address:''}</Text>
                 </View>
                 <View style={styles.textContainer}>
-                    <Text style={styles.textInfor} >Email: {this.state.customerInfor?this.state.customerInfor.email:''}</Text>
+                    <Text style={styles.textInfor} >Email: {this.state.nurseInfor?this.state.nurseInfor.email:''}</Text>
                 </View>
                 <View style={styles.buttonContainer}>
-                    {/* <TouchableOpacity style={styles.btnConfirm}
-                        onPress={() => this.props.navigation.dispatch(
-                            CommonActions.navigate({
-                                name: 'UpdateInformation',
-                                params: {
-                                    customerInfo: this.state.customerInfor
-                                },
-                            })
-                        )}
-                    >
-                        <Text style={styles.textBtn}>Chỉnh sửa thông tin</Text>
-                    </TouchableOpacity> */}
                     <TouchableOpacity style={styles.btnConfirm}
                         onPress={() => this.props.navigation.navigate('ChangePassword')}
                     >
@@ -109,14 +120,14 @@ class nurseInformation extends Component {
 const mapStateToProps = (state) => {
     return {
         token: state.login.token,
-        customerInfor: state.loadCustomer.customerInfor,
-        isLoadSuccess: state.loadCustomer.isLoadSuccess,
-        loadError: state.loadCustomer.LoadError
+        nurseInfor: state.loadNurse.nurseInfor,
+        isLoadSuccess: state.loadNurse.isLoadSuccess,
+        loadError: state.loadNurse.LoadError
     };
 }
 const mapStateToDispatch = (dispatch) => {
     return {
-        load: (customerInfor) => dispatch(loadCustomerInfor(customerInfor)),
+        load: (nurseInfor) => dispatch(loadNurseInfor(nurseInfor)),
     };
 }
 
