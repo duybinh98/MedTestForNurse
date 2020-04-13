@@ -72,7 +72,7 @@ class RequestViewScreen extends Component {
                 },
                 body: JSON.stringify({
                     status: 'accepted',
-                    userID: this.props.customerInfor.id,
+                    userID: this.props.nurseInfor.id,
                     note: 'I want to accept this request',
                 }),
                 })
@@ -104,7 +104,7 @@ class RequestViewScreen extends Component {
                 },
                 body: JSON.stringify({
                     status: 'pending',
-                    userID: this.props.customerInfor.id,
+                    userID: this.props.nurseInfor.id,
                     note: 'I want to release this request',
                 }),
                 })
@@ -137,7 +137,7 @@ class RequestViewScreen extends Component {
                 },
                 body: JSON.stringify({
                     status: 'transporting',
-                    userID: this.props.customerInfor.id,
+                    userID: this.props.nurseInfor.id,
                     note: 'I have taken sample and transport it to coordinator',
                 }),
                 })
@@ -166,7 +166,7 @@ class RequestViewScreen extends Component {
                     requestId: this.state.requestId,
                     name: this.state.name,
                     date: this.state.date,
-                    nurseId: this.props.customerInfor.id,
+                    nurseId: this.props.nurseInfor.id,
                     backScreen:'RequestListProcessingScreen',
                     token: this.props.token,
                 },
@@ -395,14 +395,14 @@ class RequestViewScreen extends Component {
 const mapStateToProps = (state) => {
     return {
         token: state.login.token,
-        customerInfor: state.loadCustomer.customerInfor,
-        isLoadSuccess: state.loadCustomer.isLoadSuccess,
-        loadError: state.loadCustomer.LoadError
+        nurseInfor: state.loadNurse.nurseInfor,
+        isLoadSuccess: state.loadNurse.isLoadSuccess,
+        loadError: state.loadNurse.LoadError
     };
 }
 const mapStateToDispatch = (dispatch) => {
     return {
-        load: (customerInfor) => dispatch(loadCustomerInfor(customerInfor)),
+        load: (nurseInfor) => dispatch(loadNurseInfor(nurseInfor)),
     };
 }
 

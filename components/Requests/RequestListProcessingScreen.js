@@ -13,7 +13,7 @@ class RequestListProcessingScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            customerId: this.props.customerInfor? this.props.customerInfor.id: '-1',
+            nurseId: this.props.nurseInfor? this.props.nurseInfor.id: '-1',
             isRightButtonSelected: false,
             Button1Pressed:true,
             Button2Pressed:false,
@@ -45,7 +45,7 @@ class RequestListProcessingScreen extends Component {
     // }
 
     callApiGetRequestProcessingList(){
-        fetch(getApiUrl()+'/users/nurses/'+this.state.customerId+'/list/handling', {
+        fetch(getApiUrl()+'/users/nurses/'+this.state.nurseId+'/list/handling', {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
@@ -238,15 +238,15 @@ class RequestListProcessingScreen extends Component {
 const mapStateToProps = (state) => {
     return {
         token: state.login.token,
-        customerInfor: state.loadCustomer.customerInfor,
-        isLoadSuccess: state.loadCustomer.isLoadSuccess,
-        loadError: state.loadCustomer.LoadError,
+        nurseInfor: state.loadNurse.nurseInfor,
+        isLoadSuccess: state.loadNurse.isLoadSuccess,
+        loadError: state.loadNurse.LoadError,
         token: state.login.token
     };
 }
 const mapStateToDispatch = (dispatch) => {
     return {
-        load: (customerInfor) => dispatch(loadCustomerInfor(customerInfor)),
+        load: (nurseInfor) => dispatch(loadNurseInfor(nurseInfor)),
     };
 }
 
