@@ -94,17 +94,17 @@ class changePassword extends Component {
                         </View>
                     </View>
                     <Field name="password" keyboardType="default" component={renderField} iconName="lock-question"
-                        iconType="material-community" placeholder="Mật khẩu cũ" secureText={true}
+                        iconType="material-community" placeholder="Mật khẩu cũ" isSecureText={true}
                         onChange={(text) => { this.setState({ password: text }) }}
                         validate={[required, isWeakPassword]}
                     />
                     <Field name="newPassword" keyboardType="default" component={renderField} iconName="lock-question"
-                        iconType="material-community" placeholder="Mật khẩu mới" secureText={true}
+                        iconType="material-community" placeholder="Mật khẩu mới" isSecureText={true}
                         onChange={(text) => { this.setState({ newPassword: text }) }}
                         validate={[required, isWeakPassword]}
                     />
                     <Field name="cfNewPassword" keyboardType="default" component={renderField} iconName="lock-question"
-                        iconType="material-community" placeholder="Xác nhận mật khẩu mới" secureText={true}
+                        iconType="material-community" placeholder="Xác nhận mật khẩu mới" isSecureText={true}
                         validate={[required, isWeakPassword]}
                     />
                     <TouchableOpacity style={styles.btnChangePassword} onPress={handleSubmit(this.submit)}>

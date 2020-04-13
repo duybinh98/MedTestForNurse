@@ -81,7 +81,7 @@ class LoginComponent extends Component {
                         validate={[required, isNumber, isPhonenumber]}
                     />
                     <Field name="password" keyboardType="default" component={renderField} iconName="lock-question"
-                        iconType="material-community" placeholder="Mật khẩu" secureText={true}
+                        iconType="material-community" placeholder="Mật khẩu" isSecureText={true}
                         onChange={(text) => { this.setState({ password: text }) }}
                         validate={[required, isWeakPassword]}
                     />

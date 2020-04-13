@@ -126,7 +126,7 @@ function CustomDrawerContent(props) {
           link='tel:1900561252'
         />
         <MenuButtonScreenContainer
-          screenName='CancelRequestScreen'
+          screenName='LoginScreen'
           iconName='logout'
           iconType='antdesign'
           iconColor='#0A6ADA'
