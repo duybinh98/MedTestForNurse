@@ -96,6 +96,7 @@ class RequestListPendingScreen extends Component {
         sortByAppointmentTime() {
             const _requestList = this.state.requestList;
             if (_requestList != null) _requestList.sort((a, b) => a.requestMeetingTime.localeCompare(b.requestMeetingTime))
+            // if (_requestList != null) _requestList.sort((a, b) => b.requestMeetingTime.localeCompare(a.requestMeetingTime))
             return _requestList;
         }
 

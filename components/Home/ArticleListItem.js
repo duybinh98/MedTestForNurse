@@ -40,7 +40,7 @@ export default class ArticleListItem extends Component {
 const styles = StyleSheet.create({
     articleArea:{
         height:150,
-        alignSelf: 'stretch',
+        alignItems: 'stretch',
         width: Dimensions.get('window').width-20,
         backgroundColor: 'white',
         flexDirection: 'row',
@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
     },
     articleTextArea:{
         height:130,
+        alignItems: 'stretch',
         flex:1,
         marginLeft:10,
         marginRight:20,
@@ -64,12 +65,13 @@ const styles = StyleSheet.create({
     },
     articleTitle:{
         height:48,
-        alignSelf: 'stretch',
+        alignItems: 'stretch',
+        fontWeight: 'bold',
         fontSize:19
     },
     articleShortContent:{
-        height:80,
-        alignSelf: 'stretch',
+        height:78,
+        alignItems: 'stretch',
         fontSize:13
     }
 });

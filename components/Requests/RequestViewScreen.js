@@ -62,103 +62,103 @@ class RequestViewScreen extends Component {
 
     }
 
-    onAcceptRequest(){
-        fetch(getApiUrl()+"/requests/update/"+this.state.requestId, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer '+this.props.token,
+    onAcceptRequest() {
+        fetch(getApiUrl() + "/requests/update/" + this.state.requestId, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + this.props.token,
+            },
+            body: JSON.stringify({
+                status: 'accepted',
+                userID: this.props.nurseInfor.id,
+                note: 'I want to accept this request',
+            }),
+        })
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    console.log(result)
+                    this.props.navigation.dispatch(
+                        CommonActions.navigate({
+                            name: 'RequestListProcessingScreen',
+                            params: {
+                            },
+                        }))
                 },
-                body: JSON.stringify({
-                    status: 'accepted',
-                    userID: this.props.nurseInfor.id,
-                    note: 'I want to accept this request',
-                }),
-                })
-        .then(res => res.json())
-        .then(
-            (result) => {
-                console.log(result)
-                this.props.navigation.dispatch(
-                CommonActions.navigate({
-                    name: 'RequestListProcessingScreen',
-                    params: {
-                    },
-                }))  
-            },            
-            (error) => {
-                console.log(error)
-            }
-        )  
+                (error) => {
+                    console.log(error)
+                }
+            )
     }
 
 
-    onReleaseRequest(){
-        fetch(getApiUrl()+"/requests/update/"+this.state.requestId, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer '+this.props.token,
+    onReleaseRequest() {
+        fetch(getApiUrl() + "/requests/update/" + this.state.requestId, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + this.props.token,
+            },
+            body: JSON.stringify({
+                status: 'pending',
+                userID: this.props.nurseInfor.id,
+                note: 'I want to release this request',
+            }),
+        })
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    console.log(result)
+                    this.props.navigation.dispatch(
+                        CommonActions.navigate({
+                            name: 'RequestListPendingScreen',
+                            params: {
+                            },
+                        }))
                 },
-                body: JSON.stringify({
-                    status: 'pending',
-                    userID: this.props.nurseInfor.id,
-                    note: 'I want to release this request',
-                }),
-                })
-        .then(res => res.json())
-        .then(
-            (result) => {
-                console.log(result)
-                this.props.navigation.dispatch(
-                CommonActions.navigate({
-                    name: 'RequestListPendingScreen',
-                    params: {
-                    },
-                }))  
-            },            
-            (error) => {
-                console.log(error)
-            }
-        )  
+                (error) => {
+                    console.log(error)
+                }
+            )
     }
 
 
 
-    onTakingSample(){
-        fetch(getApiUrl()+"/requests/update/"+this.state.requestId, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer '+this.props.token,
+    onTakingSample() {
+        fetch(getApiUrl() + "/requests/update/" + this.state.requestId, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + this.props.token,
+            },
+            body: JSON.stringify({
+                status: 'transporting',
+                userID: this.props.nurseInfor.id,
+                note: 'I have taken sample and transport it to coordinator',
+            }),
+        })
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    console.log(result)
+                    this.props.navigation.dispatch(
+                        CommonActions.navigate({
+                            name: 'RequestListProcessingScreen',
+                            params: {
+                            },
+                        }))
                 },
-                body: JSON.stringify({
-                    status: 'transporting',
-                    userID: this.props.nurseInfor.id,
-                    note: 'I have taken sample and transport it to coordinator',
-                }),
-                })
-        .then(res => res.json())
-        .then(
-            (result) => {
-                console.log(result)
-                this.props.navigation.dispatch(
-                CommonActions.navigate({
-                    name: 'RequestListProcessingScreen',
-                    params: {
-                    },
-                }))  
-            },            
-            (error) => {
-                console.log(error)
-            }
-        )  
+                (error) => {
+                    console.log(error)
+                }
+            )
     }
 
-    onLostSample(){
+    onLostSample() {
         this.props.navigation.dispatch(
             CommonActions.navigate({
                 name: 'CancelRequestScreen',
@@ -167,10 +167,10 @@ class RequestViewScreen extends Component {
                     name: this.state.name,
                     date: this.state.date,
                     nurseId: this.props.nurseInfor.id,
-                    backScreen:'RequestListProcessingScreen',
+                    backScreen: 'RequestListProcessingScreen',
                     token: this.props.token,
                 },
-            }))  
+            }))
     }
 
 
@@ -273,7 +273,7 @@ class RequestViewScreen extends Component {
                 this.props.navigation.goBack();
                 break;
             case 'lostsample':
-                this.props.navigation.goBack();
+                this.onTakingSample();
                 break;
             case 'coordinatorlostsample':
                 this.props.navigation.goBack();
@@ -304,6 +304,9 @@ class RequestViewScreen extends Component {
                         <Text style={{ fontSize: 22, color: '#25345D' }}>Đơn xét nghiệm</Text>
                     </View>
                     <View style={styles.infoArea}>
+                    <View style={styles.textContainer}>
+                            <Text style={styles.textInfor} >Mã xét nghiệm:  {this.state.requestId}</Text>
+                        </View>
                         <View style={styles.textContainer}>
                             <Text style={styles.textInfor} >Tên hiển thị:  {this.state.name}</Text>
                         </View>
@@ -343,11 +346,11 @@ class RequestViewScreen extends Component {
                                 <Text style={[styles.textInfor, { color: this.state.statusColor }]} >{this.state.statusName}</Text>
                             </View>
                         </View>
-                        {this.state.status !== 'pending' ? this.state.status !== 'coordinatorlostsample'?
-                        <View style={styles.textContainer}>
-                            <Text style={styles.textInfor} >Y tá: {this.state.nurseName}</Text>
-                        </View>
-                        : null : null
+                        {this.state.status !== 'pending' ? this.state.status !== 'coordinatorlostsample' ?
+                            <View style={styles.textContainer}>
+                                <Text style={styles.textInfor} >Y tá: {this.state.nurseName}</Text>
+                            </View>
+                            : null : null
                         }
                     </View>
                     <View style={styles.TestListAreaBackground}>

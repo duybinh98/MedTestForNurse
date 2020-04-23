@@ -63,7 +63,7 @@ class LoginComponent extends Component {
                 console.log('error at screen'+this.props.LoginError)
                 // Alert.alert(this.props.LoginError.message);
                 }
-        },10000)
+        },14000)
 
 
     }
