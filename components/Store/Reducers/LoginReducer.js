@@ -79,7 +79,7 @@ export default function reducer(state = {
 function sendLoginRequest(phoneNumber, password) {
     return new Promise((resolve, reject) => {    
 
-    fetch(getApiUrl()+'/users/nurses/login', {
+    fetch(getApiUrl()+'/users/login', {
         method: 'POST',
         headers: {
             Accept: 'application/json',
