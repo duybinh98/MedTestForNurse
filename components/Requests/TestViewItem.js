@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {View, StyleSheet, Dimensions, Text, TextInput, ScrollView, TouchableOpacity} from 'react-native';
 import {Icon} from 'react-native-elements';
+import {convertMoney} from './../Common/CommonFunction'
 
 
 
@@ -42,7 +43,7 @@ export default class TestViewItem extends Component {
                             fontSize:12,
                             color:'#25345d'
                         }}    
-                        >{this.props.testPrice}</Text>
+                        >{convertMoney(this.props.testPrice)}</Text>
                 </View>
             </View>
         );

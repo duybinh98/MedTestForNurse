@@ -64,7 +64,6 @@ class CancelRequestScreen extends Component {
 
     
     onLostSamplePress(){
-        
         console.log(this.state.requestId)
         console.log(this.state.token)
         console.log(this.state.nurseId)
@@ -77,7 +76,7 @@ class CancelRequestScreen extends Component {
                     Authorization: 'Bearer '+this.state.token,
                 },
                 body: JSON.stringify({
-                    status: 'lostsample',
+                    status: this.props.route.params.status?this.props.route.params.status:'lostsample',
                     userID: this.state.nurseId,
                     note: this.state.reason,
                 }),
@@ -147,7 +146,7 @@ class CancelRequestScreen extends Component {
                     }}
                 >
                     <View style={styles.titleArea}>
-                        <Text style={{ fontSize: 22, color: '#25345D' }}>Đặt xét nghiệm</Text>
+                        <Text style={{ fontSize: 22, color: '#25345D' }}>{this.props.route.params.title?this.props.route.params.title:'Báo mất mẫu'}</Text>
                     </View>
                     <View style={styles.infoArea}>
                         <View style={styles.textContainer}>
@@ -167,7 +166,7 @@ class CancelRequestScreen extends Component {
                         </View>
                     </View>
                     <Field name="reason" keyboardType="default" component={renderField}
-                        placeholder="Lý do hủy đơn" secureText={true}
+                        placeholder="Lý do" secureText={true}
                         onChange={(text) => { this.setState({ reason: text }) }}
                         validate={[required]}
                     />

@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {View, StyleSheet, Image, Text, Dimensions, TouchableOpacity} from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import {Button} from 'react-native-elements';
-import {convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor} from './../Common/CommonFunction'
+import {convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor, convertMoney} from './../Common/CommonFunction'
 
 export default class RequestListPendingItem extends Component {
     constructor(props) {
@@ -57,7 +57,7 @@ export default class RequestListPendingItem extends Component {
                     <Text style={{fontSize:17}}>{this.props.cust_name}</Text>
                     </View>
                     <View>
-                    <Text style={{fontSize:15}}>{this.props.req_amount+' đ'}</Text>
+                    <Text style={{fontSize:15}}>{convertMoney(this.props.req_amount)+' đ'}</Text>
                     </View>
                 </View>   
                 <View style={styles.requestListTextContainer}>

@@ -7,7 +7,7 @@ import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import TestCategoryItem from './TestCategoryItem'
 import TestViewItem from './TestViewItem'
 import testList from './../../Data/Test'
-import { getApiUrl, convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor } from './../Common/CommonFunction'
+import { getApiUrl, convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor,convertMoney } from './../Common/CommonFunction'
 
 class RequestViewScreen extends Component {
     constructor(props) {
@@ -62,7 +62,7 @@ class RequestViewScreen extends Component {
 
     }
 
-    onAcceptRequest() {
+    callApiUpdateRequest(_status,_note,_screenName){
         fetch(getApiUrl() + "/requests/update/" + this.state.requestId, {
             method: 'POST',
             headers: {
@@ -71,91 +71,50 @@ class RequestViewScreen extends Component {
                 Authorization: 'Bearer ' + this.props.token,
             },
             body: JSON.stringify({
-                status: 'accepted',
+                status: _status,
                 userID: this.props.nurseInfor.id,
-                note: 'I want to accept this request',
+                note: _note,
             }),
         })
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    console.log(result)
-                    this.props.navigation.dispatch(
-                        CommonActions.navigate({
-                            name: 'RequestListProcessingScreen',
-                            params: {
-                            },
-                        }))
-                },
-                (error) => {
-                    console.log(error)
-                }
-            )
+        .then(res => res.json())
+        .then(
+            (result) => {
+                console.log(result)
+                this.props.navigation.dispatch(
+                    CommonActions.navigate({
+                        name: _screenName,
+                        params: {
+                        },
+                    }))
+            },
+            (error) => {
+                console.log(error)
+            }
+        )
     }
 
+    onAcceptRequest() {
+        this.callApiUpdateRequest('accepted','I want to accept this request','RequestListProcessingScreen')
+    }
+
+    onReAcceptRequest() {
+        this.callApiUpdateRequest('reaccepted','I want to accept this request','RequestListProcessingScreen')
+    }
 
     onReleaseRequest() {
-        fetch(getApiUrl() + "/requests/update/" + this.state.requestId, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + this.props.token,
-            },
-            body: JSON.stringify({
-                status: 'pending',
-                userID: this.props.nurseInfor.id,
-                note: 'I want to release this request',
-            }),
-        })
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    console.log(result)
-                    this.props.navigation.dispatch(
-                        CommonActions.navigate({
-                            name: 'RequestListPendingScreen',
-                            params: {
-                            },
-                        }))
-                },
-                (error) => {
-                    console.log(error)
-                }
-            )
+        this.callApiUpdateRequest('pending','I want to release this request','RequestListPendingScreen')
     }
 
-
+    onReReleaseRequest() {
+        this.callApiUpdateRequest('coordinatorlostsample','I want to release this request','RequestListPendingScreen')
+    }
 
     onTakingSample() {
-        fetch(getApiUrl() + "/requests/update/" + this.state.requestId, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + this.props.token,
-            },
-            body: JSON.stringify({
-                status: 'transporting',
-                userID: this.props.nurseInfor.id,
-                note: 'I have taken sample and transport it to coordinator',
-            }),
-        })
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    console.log(result)
-                    this.props.navigation.dispatch(
-                        CommonActions.navigate({
-                            name: 'RequestListProcessingScreen',
-                            params: {
-                            },
-                        }))
-                },
-                (error) => {
-                    console.log(error)
-                }
-            )
+        this.callApiUpdateRequest('transporting','I have taken sample and transport it to coordinator','RequestListProcessingScreen')
+    }
+
+    onReTakingSample() {
+        this.callApiUpdateRequest('retransporting','I have taken sample and transport it to coordinator','RequestListProcessingScreen')
     }
 
     onLostSample() {
@@ -163,6 +122,25 @@ class RequestViewScreen extends Component {
             CommonActions.navigate({
                 name: 'CancelRequestScreen',
                 params: {
+                    title: 'Báo mất mẫu',
+                    status: 'lostsample',
+                    requestId: this.state.requestId,
+                    name: this.state.name,
+                    date: this.state.date,
+                    nurseId: this.props.nurseInfor.id,
+                    backScreen: 'RequestListProcessingScreen',
+                    token: this.props.token,
+                },
+            }))
+    }
+
+    onReLostSample() {
+        this.props.navigation.dispatch(
+            CommonActions.navigate({
+                name: 'CancelRequestScreen',
+                params: {
+                    title: 'Báo mất mẫu',
+                    status: 'relostsample',
                     requestId: this.state.requestId,
                     name: this.state.name,
                     date: this.state.date,
@@ -179,11 +157,8 @@ class RequestViewScreen extends Component {
             case 'pending':
                 return 'Nhận đơn';
                 break;
-            case 'coordinatorlostsample':
-                return 'Nhận đơn';
-                break;
             case 'accepted':
-                return 'Hủy';
+                return 'Hủy đơn';
                 break;
             case 'transporting':
                 return 'Báo mất mẫu';
@@ -192,6 +167,18 @@ class RequestViewScreen extends Component {
                 return '';
                 break;
             case 'waitingforresult':
+                return '';
+                break;
+            case 'coordinatorlostsample':
+                return 'Nhận đơn';
+                break;
+            case 'reaccepted':
+                return 'Hủy đơn';
+                break;
+            case 'retransporting':
+                return 'Báo mất mẫu';
+                break;
+            case 'relostsample':
                 return '';
                 break;
             case 'closed':
@@ -206,9 +193,6 @@ class RequestViewScreen extends Component {
             case 'pending':
                 return 'Quay lại';
                 break;
-            case 'coordinatorlostsample':
-                return 'Quay lại';
-                break;
             case 'accepted':
                 return 'Xác nhận lấy mẫu';
                 break;
@@ -220,6 +204,18 @@ class RequestViewScreen extends Component {
                 break;
             case 'waitingforresult':
                 return 'Quay lại';
+                break;
+            case 'coordinatorlostsample':
+                return 'Quay lại';
+                break;
+            case 'reaccepted':
+                return 'Xác nhận lấy mẫu';
+                break;
+            case 'retransporting':
+                return 'Quay lại';
+                break;
+            case 'relostsample':
+                return 'Xác nhận lấy mẫu';
                 break;
             case 'closed':
                 return 'Quay lại';
@@ -240,18 +236,29 @@ class RequestViewScreen extends Component {
             case 'transporting':
                 this.onLostSample();
                 break;
+            case 'lostsample':
+                this.props.navigation.goBack();
+                break;
             case 'waitingforresult':
+                this.props.navigation.goBack();
+                break;
+            case 'coordinatorlostsample':
+                this.onReAcceptRequest();
+                break;
+            case 'reaccepted':
+                this.onReReleaseRequest();
+                break;
+            case 'retransporting':
+                this.onReLostSample();
+                break;
+            case 'relostsample':
                 this.props.navigation.goBack();
                 break;
             case 'closed':
                 this.props.navigation.goBack();
                 break;
-            case 'lostsample':
-                this.props.navigation.goBack();
-                break;
-            case 'coordinatorlostsample':
-                this.props.navigation.goBack();
-                break;
+            
+            
         }
     }
 
@@ -266,18 +273,29 @@ class RequestViewScreen extends Component {
             case 'transporting':
                 this.props.navigation.goBack();
                 break;
-            case 'waitingforresult':
-                this.props.navigation.goBack();
-                break;
-            case 'closed':
-                this.props.navigation.goBack();
-                break;
             case 'lostsample':
                 this.onTakingSample();
+                break;
+            case 'waitingforresult':
+                this.props.navigation.goBack();
                 break;
             case 'coordinatorlostsample':
                 this.props.navigation.goBack();
                 break;
+            case 'reaccepted':
+                this.onReTakingSample();
+                break;
+            case 'retransporting':
+                this.props.navigation.goBack();
+                break;
+            case 'relostsample':
+                this.onReTakingSample();
+                break;
+            case 'closed':
+                this.props.navigation.goBack();
+                break;
+            
+            
         }
     }
 
@@ -332,7 +350,7 @@ class RequestViewScreen extends Component {
                             </View>
                         </View>
                         <View style={styles.textContainer}>
-                            <Text style={styles.textInfor} >Tổng số tiền: {this.state.totalAmount} đ</Text>
+                            <Text style={styles.textInfor} >Tổng số tiền: {convertMoney(this.state.totalAmount)} đ</Text>
                         </View>
                         <View style={styles.doubleContainer}>
                             <View style={{
