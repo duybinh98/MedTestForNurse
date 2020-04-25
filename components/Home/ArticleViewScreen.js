@@ -78,10 +78,12 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
     },
     articleTitleText:{
-        fontSize:25,
-        //fontWeight: 'bold',
+        fontSize:23,
+        fontWeight: 'bold',
+        
     },
     articleContentText:{
-        fontSize:20
+        fontSize:16,
+        textAlign: 'justify'
     }
 });

@@ -13,7 +13,7 @@ class NotificationListScreen extends Component {
     constructor(props) {
     super(props);
     this.state = {
-        customerId: this.props.customerInfor? this.props.customerInfor.id: '-1',
+        customerId: this.props.nurseInfor? this.props.nurseInfor.id: '-1',
         notiList: [],
         dataChanged: true,
         testsList: [],
@@ -118,14 +118,14 @@ class NotificationListScreen extends Component {
 const mapStateToProps = (state) => {
     return {
         token: state.login.token,
-        customerInfor: state.loadCustomer.customerInfor,
-        isLoadSuccess: state.loadCustomer.isLoadSuccess,
-        loadError: state.loadCustomer.LoadError,
+        nurseInfor: state.loadNurse.nurseInfor,
+        isLoadSuccess: state.loadNurse.isLoadSuccess,
+        loadError: state.loadNurse.LoadError,
     };
 }
 const mapStateToDispatch = (dispatch) => {
     return {
-        load: (customerInfor) => dispatch(loadCustomerInfor(customerInfor)),
+        load: (nurseInfor) => dispatch(loadNurseInfor(nurseInfor)),
     };
 }
 
