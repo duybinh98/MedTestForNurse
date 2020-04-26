@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, Text, TextInput, ScrollView, TouchableOpacity, Keyboard } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, TextInput, ScrollView, TouchableOpacity, Keyboard, Alert } from 'react-native';
 import ScreenTopMenuBack from './../Common/ScreenTopMenuBack';
 import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import { CommonActions } from '@react-navigation/native';
@@ -42,6 +42,8 @@ class CancelRequestScreen extends Component {
             showFooter: true,
             buttonText: 'Xác nhận',
             reason: '',
+
+            disabledButton: false,
         };
     }
 
@@ -62,39 +64,56 @@ class CancelRequestScreen extends Component {
         this.keyboardDidHideSub = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
     }
 
-    
-    onLostSamplePress(){
+
+    onLostSamplePress() {
         console.log(this.state.requestId)
         console.log(this.state.token)
         console.log(this.state.nurseId)
         console.log(this.state.reason)
-        fetch(getApiUrl()+"/requests/update/"+this.state.requestId, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: 'Bearer '+this.state.token,
+        Alert.alert(
+            'Thông báo xác nhận',
+            'Bạn muốn báo mất mẫu?',
+            [
+                { text: 'Hủy', onPress: () => { return null } },
+                {
+                    text: 'Xác nhận', onPress: () => {
+                        this.setState({
+                            disabledButton: true,
+                        })
+                        fetch(getApiUrl() + "/requests/update/" + this.state.requestId, {
+                            method: 'POST',
+                            headers: {
+                                Accept: 'application/json',
+                                'Content-Type': 'application/json',
+                                Authorization: 'Bearer ' + this.state.token,
+                            },
+                            body: JSON.stringify({
+                                status: this.props.route.params.status ? this.props.route.params.status : 'lostsample',
+                                userID: this.state.nurseId,
+                                note: this.state.reason,
+                            }),
+                        })
+                            .then(res => res.json())
+                            .then(
+                                (result) => {
+                                    this.setState({
+                                        disabledButton: false,
+                                    })
+                                    console.log(result)
+                                    this.props.navigation.dispatch(
+                                        CommonActions.navigate({
+                                            name: 'RequestListProcessingScreen',
+                                            params: {
+                                            },
+                                        }))
+                                },
+                                (error) => {
+                                    console.log(error)
+                                }
+                            )
+                    }
                 },
-                body: JSON.stringify({
-                    status: this.props.route.params.status?this.props.route.params.status:'lostsample',
-                    userID: this.state.nurseId,
-                    note: this.state.reason,
-                }),
-                })
-        .then(res => res.json())
-        .then(
-            (result) => {
-                console.log(result)
-                this.props.navigation.dispatch(
-                CommonActions.navigate({
-                    name: 'RequestListProcessingScreen',
-                    params: {
-                    },
-                }))  
-            },            
-            (error) => {
-                console.log(error)
-            }
+            ]
         )
     }
 
@@ -134,7 +153,7 @@ class CancelRequestScreen extends Component {
     render() {
         const { handleSubmit } = this.props;
         return (
-            
+
             <View style={{ flex: 1 }}>
                 <ScreenTopMenuBack navigation={this.props.navigation} backScreen={this.props.backScreen ? this.props.backScreen : null}></ScreenTopMenuBack>
                 <ScrollView
@@ -146,7 +165,7 @@ class CancelRequestScreen extends Component {
                     }}
                 >
                     <View style={styles.titleArea}>
-                        <Text style={{ fontSize: 22, color: '#25345D' }}>{this.props.route.params.title?this.props.route.params.title:'Báo mất mẫu'}</Text>
+                        <Text style={{ fontSize: 22, color: '#25345D' }}>{this.props.route.params.title ? this.props.route.params.title : 'Báo mất mẫu'}</Text>
                     </View>
                     <View style={styles.infoArea}>
                         <View style={styles.textContainer}>
@@ -171,7 +190,7 @@ class CancelRequestScreen extends Component {
                         validate={[required]}
                     />
                     <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={styles.btnConfirm} onPress={handleSubmit(this.submit)}>
+                        <TouchableOpacity style={styles.btnConfirm} disabled={this.state.disabledButton} onPress={handleSubmit(this.submit)}>
                             <Text style={styles.textBtn} >{this.state.buttonText}</Text>
                         </TouchableOpacity>
                     </View>
@@ -244,7 +263,7 @@ const styles = StyleSheet.create({
         flex: 50,
     },
     textInfor: {
-        fontSize:  16,
+        fontSize: 16,
     },
     textContainer: {
         marginTop: 5,
@@ -277,15 +296,13 @@ const styles = StyleSheet.create({
         width: 130,
         height: 45,
         borderRadius: 5,
-        backgroundColor: 'white',
+        backgroundColor: '#0A6ADA',
         justifyContent: 'center',
-        borderWidth: 2,
-        borderColor: '#0A6ADA',
         paddingBottom: 3,
         marginRight: 20,
     },
     textBtn: {
-        color: '#0A6ADA',
+        color: 'white',
         textAlign: "center",
         fontSize: 16,
     },

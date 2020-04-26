@@ -29,6 +29,7 @@ class changePassword extends Component {
             phonenumber: this.props.nurseInforLoad ? this.props.nurseInforLoad.phoneNumber : '',
             password: '',
             newPassword: '',
+            disabledButton: false,
         };
         this.submit = this.submit.bind(this)
     }
@@ -45,6 +46,9 @@ class changePassword extends Component {
         } else if (values.cfNewPassword !== values.newPassword) {
             alert("Xác nhận mật khẩu mới không đúng!")
         } else {
+            this.setState({
+                disabledButton : true,
+            })
             fetch(getApiUrl()+'/users/nurses/change-password/'+this.state.nurseId, {
                 method: 'POST',
                 headers: {
@@ -60,6 +64,9 @@ class changePassword extends Component {
             .then(res => res.json())
             .then(
                 (result) => {
+                    this.setState({
+                        disabledButton : false,
+                    })
                     if (result.changedSuccess == true) {
                         Alert.alert(
                             'Đổi mật khẩu',
@@ -129,7 +136,7 @@ class changePassword extends Component {
                         iconType="material-community" placeholder="Xác nhận mật khẩu mới" isSecureText={true}
                         validate={[required, isWeakPassword]}
                     />
-                    <TouchableOpacity style={styles.btnChangePassword} onPress={handleSubmit(this.submit)}>
+                    <TouchableOpacity style={styles.btnChangePassword} disabled={this.state.disabledButton} onPress={handleSubmit(this.submit)}>
                         <Text style={styles.textBtn}>Xác nhận đổi mật khẩu</Text>
                     </TouchableOpacity>
                     <View>
@@ -143,6 +150,7 @@ class changePassword extends Component {
 let ChangePasswordForm = reduxForm({
     form: 'changePassword',
     enableReinitialize: true,
+    destroyOnUnmount: false,
 })(changePassword);
 
 ChangePasswordForm = connect(

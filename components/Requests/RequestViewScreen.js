@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Dimensions, Text, TextInput, ScrollView, TouchableOpacity, FlatList } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, TextInput, ScrollView, TouchableOpacity, FlatList, Alert } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
 import { connect } from 'react-redux';
 import ScreenTopMenuBack from './../Common/ScreenTopMenuBack';
@@ -7,7 +7,7 @@ import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import TestCategoryItem from './TestCategoryItem'
 import TestViewItem from './TestViewItem'
 import testList from './../../Data/Test'
-import { getApiUrl, convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor,convertMoney } from './../Common/CommonFunction'
+import { getApiUrl, convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor, convertMoney } from './../Common/CommonFunction'
 
 class RequestViewScreen extends Component {
     constructor(props) {
@@ -22,11 +22,13 @@ class RequestViewScreen extends Component {
             status: this.props.route.params.status ? this.props.route.params.status : 'Đang đợi lấy mẫu',
             statusName: this.props.route.params.status ? getStateName(this.props.route.params.status) : 'Đang đợi lấy mẫu',
             statusColor: this.props.route.params.status ? getStateColor(this.props.route.params.status) : '#7ab648',
-            nurseName: 'Nguyễn Văn B',
+            // nurseName: 'Nguyễn Văn B',
+            nurseName: this.props.nurseInfor ? this.props.nurseInfor.name : '',
             totalAmount: this.props.route.params.totalAmount ? this.props.route.params.totalAmount : 'free',
             leftButtonText: this.props.route.params.status ? this.getLeftButtonName(this.props.route.params.status) : '',
             rightButtonText: this.props.route.params.status ? this.getRightButtonName(this.props.route.params.status) : 'Quay lại',
-
+            disabledLeftButton: false,
+            disabledRightButton: false,
         };
         this.isSelected = this.isSelected.bind(this);
         this.onAcceptRequest = this.onAcceptRequest.bind(this);
@@ -48,7 +50,8 @@ class RequestViewScreen extends Component {
                 status: this.props.route.params.status ? this.props.route.params.status : 'Đang đợi lấy mẫu',
                 statusName: this.props.route.params.status ? getStateName(this.props.route.params.status) : 'Đang đợi lấy mẫu',
                 statusColor: this.props.route.params.status ? getStateColor(this.props.route.params.status) : '#7ab648',
-                nurseName: 'Nguyễn Văn B',
+                // nurseName: 'Nguyễn Văn B',
+                nurseName: this.props.nurseInfor ? this.props.nurseInfor.name : '',
                 totalAmount: this.props.route.params.totalAmount ? this.props.route.params.totalAmount : 'free',
                 leftButtonText: this.props.route.params.status ? this.getLeftButtonName(this.props.route.params.status) : '',
                 rightButtonText: this.props.route.params.status ? this.getRightButtonName(this.props.route.params.status) : 'Quay lại',
@@ -62,7 +65,11 @@ class RequestViewScreen extends Component {
 
     }
 
-    callApiUpdateRequest(_status,_note,_screenName){
+    callApiUpdateRequest(_status, _note, _screenName) {
+        this.setState({
+            disabledLeftButton: true,
+            disabledRightButton: true,
+        })
         fetch(getApiUrl() + "/requests/update/" + this.state.requestId, {
             method: 'POST',
             headers: {
@@ -76,45 +83,116 @@ class RequestViewScreen extends Component {
                 note: _note,
             }),
         })
-        .then(res => res.json())
-        .then(
-            (result) => {
-                console.log(result)
-                this.props.navigation.dispatch(
-                    CommonActions.navigate({
-                        name: _screenName,
-                        params: {
-                        },
-                    }))
-            },
-            (error) => {
-                console.log(error)
-            }
-        )
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState({
+                        disabledLeftButton: false,
+                        disabledRightButton: false,
+                    })
+                    console.log(result)
+                    this.props.navigation.dispatch(
+                        CommonActions.navigate({
+                            name: _screenName,
+                            params: {
+                            },
+                        }))
+                },
+                (error) => {
+                    console.log(error)
+                }
+            )
     }
 
     onAcceptRequest() {
-        this.callApiUpdateRequest('accepted','I want to accept this request','RequestListProcessingScreen')
+        Alert.alert(
+            'Thông báo xác nhận',
+            'Bạn có muốn nhận đơn không?',
+            [
+                { text: 'Hủy', onPress: () => { return null } },
+                {
+                    text: 'Xác nhận', onPress: () => {
+                        this.callApiUpdateRequest('accepted', 'I want to accept this request', 'RequestListProcessingScreen')
+                    }
+                },
+            ]
+        )
     }
 
     onReAcceptRequest() {
-        this.callApiUpdateRequest('reaccepted','I want to accept this request','RequestListProcessingScreen')
+        Alert.alert(
+            'Thông báo xác nhận',
+            'Bạn có muốn nhận đơn không?',
+            [
+                { text: 'Hủy', onPress: () => { return null } },
+                {
+                    text: 'Xác nhận', onPress: () => {
+                        this.callApiUpdateRequest('reaccepted', 'I want to accept this request', 'RequestListProcessingScreen')
+                    }
+                },
+            ]
+        )
     }
 
     onReleaseRequest() {
-        this.callApiUpdateRequest('pending','I want to release this request','RequestListPendingScreen')
+        Alert.alert(
+            'Thông báo xác nhận',
+            'Bạn có muốn hủy đơn không?',
+            [
+                { text: 'Hủy', onPress: () => { return null } },
+                {
+                    text: 'Xác nhận', onPress: () => {
+                        this.callApiUpdateRequest('pending', 'I want to release this request', 'RequestListPendingScreen')
+                    }
+                },
+            ]
+        )
     }
 
     onReReleaseRequest() {
-        this.callApiUpdateRequest('coordinatorlostsample','I want to release this request','RequestListPendingScreen')
+        Alert.alert(
+            'Thông báo xác nhận',
+            'Bạn có muốn hủy đơn không?',
+            [
+                { text: 'Hủy', onPress: () => { return null } },
+                {
+                    text: 'Xác nhận', onPress: () => {
+                        this.callApiUpdateRequest('coordinatorlostsample', 'I want to release this request', 'RequestListPendingScreen')
+                    }
+                },
+            ]
+        )
     }
 
     onTakingSample() {
-        this.callApiUpdateRequest('transporting','I have taken sample and transport it to coordinator','RequestListProcessingScreen')
+        Alert.alert(
+            'Thông báo xác nhận',
+            'Bạn đã lấy được mẫu?',
+            [
+                { text: 'Hủy', onPress: () => { return null } },
+                {
+                    text: 'Xác nhận', onPress: () => {
+                        this.callApiUpdateRequest('transporting', 'I have taken sample and transport it to coordinator', 'RequestListProcessingScreen')
+                    }
+                },
+            ]
+        )
     }
 
     onReTakingSample() {
-        this.callApiUpdateRequest('retransporting','I have taken sample and transport it to coordinator','RequestListProcessingScreen')
+        Alert.alert(
+            'Thông báo xác nhận',
+            'Bạn đã lấy được mẫu?',
+            [
+                { text: 'Hủy', onPress: () => { return null } },
+                {
+                    text: 'Xác nhận', onPress: () => {
+                        this.callApiUpdateRequest('retransporting', 'I have taken sample and transport it to coordinator', 'RequestListProcessingScreen')
+                    }
+                },
+            ]
+        )
+
     }
 
     onLostSample() {
@@ -257,8 +335,8 @@ class RequestViewScreen extends Component {
             case 'closed':
                 this.props.navigation.goBack();
                 break;
-            
-            
+
+
         }
     }
 
@@ -294,8 +372,8 @@ class RequestViewScreen extends Component {
             case 'closed':
                 this.props.navigation.goBack();
                 break;
-            
-            
+
+
         }
     }
 
@@ -322,18 +400,19 @@ class RequestViewScreen extends Component {
                         <Text style={{ fontSize: 22, color: '#25345D' }}>Đơn xét nghiệm</Text>
                     </View>
                     <View style={styles.infoArea}>
-                    <View style={styles.textContainer}>
-                            <Text style={styles.textInfor} >Mã xét nghiệm:  {this.state.requestId}</Text>
+                        <View style={styles.textContainerId}>
+                            <Text style={[styles.textInfor]} >Mã đơn xét nghiệm: </Text>
+                            <Text style={[styles.textInforId]} > {this.state.requestId}</Text>
                         </View>
                         <View style={styles.textContainer}>
-                            <Text style={styles.textInfor} >Tên hiển thị:  {this.state.name}</Text>
+                            <Text style={styles.textInfor} >Tên khách hàng:  {this.state.name}</Text>
                         </View>
                         <View style={styles.textContainer}>
                             <Text style={styles.textInfor} >Số điện thoại: {this.state.phone}</Text>
                         </View>
-                        <View style={styles.textContainer}>
+                        {/* <View style={styles.textContainer}>
                             <Text style={styles.textInfor} >Ngày sinh: {convertDateTimeToDate(this.state.dob)}</Text>
-                        </View>
+                        </View> */}
                         <View style={styles.textContainer}>
                             <Text style={styles.textInfor} >Địa chỉ: {this.state.address}</Text>
                         </View>
@@ -361,7 +440,9 @@ class RequestViewScreen extends Component {
                             <View style={{
                                 width: 180
                             }}>
-                                <Text style={[styles.textInfor, { color: this.state.statusColor }]} >{this.state.statusName}</Text>
+                                <Text style={[styles.textInfor, { backgroundColor: this.state.statusColor, textAlign: 'center' }]} >
+                                    {this.state.statusName}
+                                </Text>
                             </View>
                         </View>
                         {this.state.status !== 'pending' ? this.state.status !== 'coordinatorlostsample' ?
@@ -398,12 +479,12 @@ class RequestViewScreen extends Component {
                     </View>
                     <View style={styles.buttonContainer}>
                         {this.state.leftButtonText ?
-                            <TouchableOpacity style={styles.btnConfirm} onPress={() => this.onLeftButtonPress()}>
+                            <TouchableOpacity style={styles.btnConfirm} disabled={this.state.disabledLeftButton} onPress={() => this.onLeftButtonPress()}>
                                 <Text style={styles.textBtn}> {this.state.leftButtonText}</Text>
                             </TouchableOpacity>
                             : <View />
                         }
-                        <TouchableOpacity style={styles.btnConfirm} onPress={() => this.onRightButtonPress()}>
+                        <TouchableOpacity style={styles.btnConfirm} disabled={this.state.disabledRightButton} onPress={() => this.onRightButtonPress()}>
                             <Text style={styles.textBtn}> {this.state.rightButtonText}</Text>
                         </TouchableOpacity>
                     </View>
@@ -472,8 +553,21 @@ const styles = StyleSheet.create({
         marginHorizontal: 15,
         justifyContent: 'center',
     },
+    textContainerId: {
+        marginTop: 5,
+        width: Dimensions.get('window').width - 55,
+        alignSelf: 'stretch',
+        marginHorizontal: 15,
+        alignItems: 'center',
+        flexDirection: 'row'
+    },
     textInfor: {
         fontSize: 16,
+    },
+    textInforId: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#0A6ADA'
     },
     doubleContainer: {
         marginTop: 5,
@@ -530,18 +624,16 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     btnConfirm: {
-        width: 130,
+        width: 140,
         height: 45,
         borderRadius: 5,
-        backgroundColor: 'white',
+        backgroundColor: '#0A6ADA',
         justifyContent: 'center',
-        borderWidth: 2,
-        borderColor: '#0A6ADA',
-        paddingBottom: 3
+        paddingBottom: 3,
     },
     textBtn: {
-        color: '#0A6ADA',
-        textAlign: "center",
+        color: 'white',
+        textAlign: 'center',
         fontSize: 16,
     },
 

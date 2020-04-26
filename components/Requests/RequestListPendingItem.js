@@ -54,7 +54,7 @@ export default class RequestListPendingItem extends Component {
                     justifyContent: 'space-between',
                 }]}>
                     <View>
-                    <Text style={{fontSize:17}}>{this.props.cust_name}</Text>
+                    <Text style={{fontSize:17, fontWeight: 'bold'}}>{this.props.cust_name}</Text>
                     </View>
                     <View>
                     <Text style={{fontSize:15}}>{convertMoney(this.props.req_amount)+' đ'}</Text>

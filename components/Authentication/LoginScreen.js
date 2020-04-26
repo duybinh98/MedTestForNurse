@@ -27,11 +27,15 @@ class LoginComponent extends Component {
             password: '',
             // customerInfoFromLogin: this.props.customerInforReducer ? this.props.customerInforReducer : null,
             nurseInfoFromLogin: null,
+            disabledButton: false,
         };
         this.submit = this.submit.bind(this)
     }
 
     submit = value => {
+        this.setState({
+            disabledButton : true,
+        })
         const { phoneNumber, password } = this.state;
         this.props.login(phoneNumber, password)
         let count = 0;
@@ -43,6 +47,9 @@ class LoginComponent extends Component {
             count += 1
         }, 100);
         setTimeout(() => {
+            this.setState({
+                disabledButton : false,
+            })
             if (this.props.nurseInfoFromLogin != null ) {                
                 // this.setState(previousState => ({
                 //     phoneNumber: '',
@@ -63,7 +70,7 @@ class LoginComponent extends Component {
                 console.log('error at screen'+this.props.LoginError)
                 // Alert.alert(this.props.LoginError.message);
                 }
-        },14000)
+        },10000)
 
 
     }
@@ -96,7 +103,7 @@ class LoginComponent extends Component {
                         validate={[required, isWeakPassword]}
                     />
                 </View>
-                <TouchableOpacity style={styles.btnLogin} onPress={handleSubmit(this.submit)}>
+                <TouchableOpacity style={styles.btnLogin}  disabled={this.state.disabledButton}  onPress={handleSubmit(this.submit)}>
                     <Text style={styles.textBtn}>Đăng nhập</Text>
                 </TouchableOpacity>
             </ScrollView>

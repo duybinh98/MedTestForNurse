@@ -15,27 +15,105 @@ const { width: WIDTH } = Dimensions.get('window')
 class nurseInformation extends Component {
     constructor(props) {
         super(props)
-        this.state = {            
+        this.state = {
             nurseInfor: null,
             nurseId: this.props.nurseInfor ? this.props.nurseInfor.id : '-1',
             token: this.props.token ? this.props.token : null,
+
+            townName: "",
+            districtName: '',
+            districtList: [],
+            townList: [],
         };
     }
-    
+
     componentWillMount() {
     }
 
-    // componentDidUpdate(prevProps, prevState) {
-    //     if (prevProps !== this.props) {
-    //         this.setState(previousState => ({
-    //             name: this.props.route.params.nurseInfor ? this.props.route.params.nurseInfor.name : "",
-    //             token: this.props.token,
-    //             nurseInfor: this.props.route.params.nurseInfor ? this.props.route.params.nurseInfor : this.state.nurseInfor
-    //         }));
-    //     }
-    // }
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps !== this.props) {
+            this.setState(previousState => ({
+                token: this.props.token,
+                nurseInfor: this.props.nurseInfor ? this.props.nurseInfor : this.state.nurseInfor
+            }));
+            setTimeout(() => {
+                this.state.districtList.forEach(district => {
+                    if (district.districtCode === this.props.nurseInfor.districtCode) {
+                        this.setState({
+                            districtName: district.districtName
+                        })
+                    } else {
+                        console.log("Error")
+                    }
+                });
+                this.state.townList.forEach(town => {
+                    if (town.townCode === this.props.nurseInfor.townCode) {
+                        this.setState({
+                            townName: town.townName
+                        })
+                    } else {
+                        console.log("Error")
+                    }
+                });
+            }, 3000);
+        }
+    }
     componentDidMount() {
         this.callApinurseInfor();
+        this.callApiGetDistrictCode();
+        this.callApiGetTownCode();
+        setTimeout(() => {
+            this.state.districtList.forEach(district => {
+                if (district.districtCode === this.props.nurseInfor.districtCode) {
+                    this.setState({
+                        districtName: district.districtName
+                    })
+                } else {
+                    console.log("Error")
+                }
+            });
+            this.state.townList.forEach(town => {
+                if (town.townCode === this.props.nurseInfor.townCode) {
+                    this.setState({
+                        townName: town.townName
+                    })
+                } else {
+                    console.log("Error")
+                }
+            });
+        }, 3000);
+    }
+    callApiGetDistrictCode() {
+        fetch(getApiUrl() + "/management/districts/district-town-list")
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState(previousState => ({
+                        districtList: result,
+                    }));
+                },
+                (error) => {
+                    this.setState({
+                        error
+                    });
+                }
+            )
+    }
+    callApiGetTownCode() {
+        fetch(getApiUrl() + "/management/districts/towns/list")
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState(previousState => ({
+                        townList: result,
+                    }));
+                },
+                (error) => {
+                    this.setState({
+                        error
+                    });
+                }
+            )
     }
     callApinurseInfor() {
         fetch(getApiUrl() + '/users/nurses/detail/' + this.state.nurseId, {
@@ -72,7 +150,7 @@ class nurseInformation extends Component {
                 <View>
                     <View style={styles.logoContainer}>
                         <ImageBackground
-                            source={{ uri: this.state.nurseInfor?this.props.nurseInfor.image:'' }}
+                            source={{ uri: this.state.nurseInfor ? this.props.nurseInfor.image : '' }}
                             style={styles.logo} >
                             <TouchableOpacity><Icon
                                 name='camera'
@@ -86,25 +164,26 @@ class nurseInformation extends Component {
                     </View>
                 </View>
                 <View style={styles.textContainer}>
-                    <Text style={styles.textInfor} >Tên hiển thị:  {this.state.nurseInfor?this.state.nurseInfor.name:""}</Text>
+                    <Text style={styles.textInfor} >Tên hiển thị:  {this.state.nurseInfor ? this.state.nurseInfor.name : ""}</Text>
                 </View>
                 <View style={styles.textContainer}>
-                    <Text style={styles.textInfor} >Số điện thoại: {this.state.nurseInfor?this.state.nurseInfor.phoneNumber:""}</Text>
+                    <Text style={styles.textInfor} >Số điện thoại: {this.state.nurseInfor ? this.state.nurseInfor.phoneNumber : ""}</Text>
                 </View>
                 <View style={styles.dobGenderContainer}>
                     <View style={styles.dobContainer}>
-                        <Text style={styles.textInfor} >Ngày sinh: {this.state.nurseInfor?convertDateTimeToDate(this.state.nurseInfor.dob):""}</Text>
+                        <Text style={styles.textInfor} >Ngày sinh: {this.state.nurseInfor ? convertDateTimeToDate(this.state.nurseInfor.dob) : ""}</Text>
                     </View>
                     <View style={styles.genderContainer}>
-                        <Text style={styles.textInfor} >Giới tính: {this.state.nurseInfor?this.state.nurseInfor.gender === 0? "Nữ" : "Nam":''}</Text>
+                        <Text style={styles.textInfor} >Giới tính: {this.state.nurseInfor ? this.state.nurseInfor.gender === 0 ? "Nữ" : "Nam" : ''}</Text>
                     </View>
                 </View>
 
                 <View style={styles.textContainer}>
-                    <Text style={styles.textInfor} >Địa chỉ: {this.state.nurseInfor?this.state.nurseInfor.address:''}</Text>
+                    <Text style={styles.textInfor} 
+                    >Địa chỉ: {this.state.nurseInfor ? this.state.nurseInfor.address + ', ' + this.state.townName + ', ' + this.state.districtName : ''}</Text>
                 </View>
                 <View style={styles.textContainer}>
-                    <Text style={styles.textInfor} >Email: {this.state.nurseInfor?this.state.nurseInfor.email:''}</Text>
+                    <Text style={styles.textInfor} >Email: {this.state.nurseInfor ? this.state.nurseInfor.email : ''}</Text>
                 </View>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.btnConfirm}
