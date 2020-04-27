@@ -24,6 +24,12 @@ class RequestViewScreen extends Component {
             statusColor: this.props.route.params.status ? getStateColor(this.props.route.params.status) : '#7ab648',
             // nurseName: 'Nguyễn Văn B',
             nurseName: this.props.nurseInfor ? this.props.nurseInfor.name : '',
+            createdTime: this.props.route.params.createdTime
+                ? this.props.route.params.createdTime
+                : '',
+            updatedTime: this.props.route.params.updatedTime
+                ? this.props.route.params.updatedTime
+                : '',
             totalAmount: this.props.route.params.totalAmount ? this.props.route.params.totalAmount : 'free',
             leftButtonText: this.props.route.params.status ? this.getLeftButtonName(this.props.route.params.status) : '',
             rightButtonText: this.props.route.params.status ? this.getRightButtonName(this.props.route.params.status) : 'Quay lại',
@@ -52,6 +58,12 @@ class RequestViewScreen extends Component {
                 statusColor: this.props.route.params.status ? getStateColor(this.props.route.params.status) : '#7ab648',
                 // nurseName: 'Nguyễn Văn B',
                 nurseName: this.props.nurseInfor ? this.props.nurseInfor.name : '',
+                createdTime: this.props.route.params.createdTime
+                    ? this.props.route.params.createdTime
+                    : '',
+                updatedTime: this.props.route.params.updatedTime
+                    ? this.props.route.params.updatedTime
+                    : '',
                 totalAmount: this.props.route.params.totalAmount ? this.props.route.params.totalAmount : 'free',
                 leftButtonText: this.props.route.params.status ? this.getLeftButtonName(this.props.route.params.status) : '',
                 rightButtonText: this.props.route.params.status ? this.getRightButtonName(this.props.route.params.status) : 'Quay lại',
@@ -91,12 +103,19 @@ class RequestViewScreen extends Component {
                         disabledRightButton: false,
                     })
                     console.log(result)
-                    this.props.navigation.dispatch(
-                        CommonActions.navigate({
-                            name: _screenName,
-                            params: {
-                            },
-                        }))
+                    if (result.success == false) {
+                        Alert.alert(
+                            'Thông báo',
+                            result.message,
+                        )
+                    } else {
+                        this.props.navigation.dispatch(
+                            CommonActions.navigate({
+                                name: _screenName,
+                                params: {
+                                },
+                            }))
+                    }
                 },
                 (error) => {
                     console.log(error)
@@ -416,6 +435,11 @@ class RequestViewScreen extends Component {
                         <View style={styles.textContainer}>
                             <Text style={styles.textInfor} >Địa chỉ: {this.state.address}</Text>
                         </View>
+                        <View style={styles.textContainer}>
+                            <Text style={styles.textInfor}>
+                                Ngày tạo đơn: {this.state.createdTime}
+                            </Text>
+                        </View>
                         <View style={styles.doubleContainer}>
                             <View style={{
                                 width: 180
@@ -430,6 +454,11 @@ class RequestViewScreen extends Component {
                         </View>
                         <View style={styles.textContainer}>
                             <Text style={styles.textInfor} >Tổng số tiền: {convertMoney(this.state.totalAmount)} đ</Text>
+                        </View>
+                        <View style={styles.textContainer}>
+                            <Text style={styles.textInfor}>
+                                Cập nhật mới nhất: {convertDateTimeToDate(this.state.updatedTime) + ' ' + convertDateTimeToTime(this.state.updatedTime)}
+                            </Text>
                         </View>
                         <View style={styles.doubleContainer}>
                             <View style={{
@@ -562,6 +591,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     textInfor: {
+
         fontSize: 16,
     },
     textInforId: {

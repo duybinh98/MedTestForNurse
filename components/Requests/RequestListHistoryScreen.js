@@ -123,6 +123,7 @@ class RequestListHistoryScreen extends Component {
                                             <RequestListPendingItem
                                                 requestId={item.requestID}
                                                 request_createTime={item.requestCreatedTime}
+                                                request_updateTime = {item.requestUpdatedTime}
                                                 cust_name={item.customerName}
                                                 cust_phone={item.customerPhoneNumber}
                                                 cust_DOB={item.customerDOB}

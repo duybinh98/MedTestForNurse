@@ -32,6 +32,8 @@ export default class RequestListPendingItem extends Component {
                                 requestId: this.props.requestId,
                                 name: this.props.cust_name,
                                 address: this.props.appoint_address,
+                                createdTime:  convertDateTimeToDate(this.props.request_createTime),
+                                updatedTime:  this.props.request_updateTime,
                                 phone: this.props.cust_phone,
                                 dob: this.props.cust_DOB,
                                 date: this.props.appoint_date,

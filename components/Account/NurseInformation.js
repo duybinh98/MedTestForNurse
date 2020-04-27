@@ -151,15 +151,7 @@ class nurseInformation extends Component {
                     <View style={styles.logoContainer}>
                         <ImageBackground
                             source={{ uri: this.state.nurseInfor ? this.props.nurseInfor.image : '' }}
-                            style={styles.logo} >
-                            <TouchableOpacity><Icon
-                                name='camera'
-                                type='material-community'
-                                color='gray'
-                                size={32}
-                                iconStyle={styles.imageIcon}
-                                onPress={() => console.log('hello')}
-                            ></Icon></TouchableOpacity>
+                            style={styles.logo} >                          
                         </ImageBackground>
                     </View>
                 </View>

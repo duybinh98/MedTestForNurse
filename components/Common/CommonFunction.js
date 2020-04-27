@@ -80,7 +80,8 @@ export function getStateColor(status){
             return '#6398d6';
             break;
         case 'closed':
-            return '#000';
+            // return '#000';
+            return '#a4d57b';
             break;
         
         } 
