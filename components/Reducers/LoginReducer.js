@@ -1,7 +1,5 @@
 import Promise from 'es6-promise';
-import { getApiUrl } from './../../Common/CommonFunction'
-// import actions from "redux-form/lib/actions"
-// import action from '../Action/actions';
+import { getApiUrl } from './../Common/CommonFunction'
 
 const LOGIN_PENDING = 'LOGIN_PENDING';
 const LOGIN_SUCCESS = 'LOGIN_SUCCESS';

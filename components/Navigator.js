@@ -5,8 +5,8 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import { CommonActions } from '@react-navigation/native';
 import { connect } from 'react-redux';
-import { login, logout } from './Store/Reducers/LoginReducer';
-import { loadNurseInfor } from './Store/Reducers/LoadInforReducer';
+import { login, logout } from './Reducers/LoginReducer';
+import { loadNurseInfor } from './Reducers/LoadInforReducer'
 
 import NurseInformation from './Account/NurseInformation';
 import ChangePassword from './Account/ChangePassword';

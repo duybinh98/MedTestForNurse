@@ -18,6 +18,8 @@ class RequestViewScreen extends Component {
             dob: this.props.route.params.dob ? this.props.route.params.dob : '01/01/1970',
             phone: this.props.route.params.phone ? this.props.route.params.phone : '0123456789',
             address: this.props.route.params.address ? this.props.route.params.address : 'Số 123 đường abc, xyz',
+            townName: this.props.route.params.townName ? this.props.route.params.townName : '',
+            districtName: this.props.route.params.districtName ? this.props.route.params.districtName : '',
             date: this.props.route.params.date ? this.props.route.params.date : '20/20/2020',
             status: this.props.route.params.status ? this.props.route.params.status : 'Đang đợi lấy mẫu',
             statusName: this.props.route.params.status ? getStateName(this.props.route.params.status) : 'Đang đợi lấy mẫu',
@@ -52,6 +54,8 @@ class RequestViewScreen extends Component {
                 dob: this.props.route.params.dob ? this.props.route.params.dob : '01/01/1970',
                 phone: this.props.route.params.phone ? this.props.route.params.phone : '0123456789',
                 address: this.props.route.params.address ? this.props.route.params.address : 'Số 123 đường abc, xyz',
+                townName: this.props.route.params.townName ? this.props.route.params.townName : '',
+                districtName: this.props.route.params.districtName ? this.props.route.params.districtName : '',
                 date: this.props.route.params.date ? this.props.route.params.date : '20/20/2020',
                 status: this.props.route.params.status ? this.props.route.params.status : 'Đang đợi lấy mẫu',
                 statusName: this.props.route.params.status ? getStateName(this.props.route.params.status) : 'Đang đợi lấy mẫu',
@@ -107,7 +111,15 @@ class RequestViewScreen extends Component {
                         Alert.alert(
                             'Thông báo',
                             result.message,
-                        )
+                            [
+                                {
+                                    text: 'Xác nhận',
+                                    onPress: () => {
+                                        this.props.navigation.navigate('RequestListProcessingScreen');
+                                    },
+                                },
+                            ],
+                        );
                     } else {
                         this.props.navigation.dispatch(
                             CommonActions.navigate({
@@ -281,7 +293,9 @@ class RequestViewScreen extends Component {
             case 'closed':
                 return '';
                 break;
-
+            case 'canceled':
+                return '';
+                break;
         }
     }
 
@@ -317,7 +331,9 @@ class RequestViewScreen extends Component {
             case 'closed':
                 return 'Quay lại';
                 break;
-
+            case 'canceled':
+                return 'Quay lại';
+                break;
         }
     }
 
@@ -354,7 +370,9 @@ class RequestViewScreen extends Component {
             case 'closed':
                 this.props.navigation.goBack();
                 break;
-
+            case 'canceled':
+                this.props.navigation.goBack();
+                break;
 
         }
     }
@@ -391,7 +409,9 @@ class RequestViewScreen extends Component {
             case 'closed':
                 this.props.navigation.goBack();
                 break;
-
+            case 'canceled':
+                this.props.navigation.goBack();
+                break;
 
         }
     }
@@ -404,6 +424,9 @@ class RequestViewScreen extends Component {
     }
 
     render() {
+        debugger;
+        const a = this.props.nurseInfor;
+        const b = this.state.address
         return (
             <View style={{ flex: 1 }}>
                 <ScreenTopMenuBack navigation={this.props.navigation} backScreen={this.props.backScreen ? this.props.backScreen : null}></ScreenTopMenuBack>
@@ -433,7 +456,7 @@ class RequestViewScreen extends Component {
                             <Text style={styles.textInfor} >Ngày sinh: {convertDateTimeToDate(this.state.dob)}</Text>
                         </View> */}
                         <View style={styles.textContainer}>
-                            <Text style={styles.textInfor} >Địa chỉ: {this.state.address}</Text>
+                            <Text style={styles.textInfor} >Địa chỉ: {this.state.address + ', ' + this.state.townName + ', ' + this.state.districtName}</Text>
                         </View>
                         <View style={styles.textContainer}>
                             <Text style={styles.textInfor}>

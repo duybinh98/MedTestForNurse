@@ -1,34 +1,34 @@
 
-export function convertDateTimeToDate(inputString){
-    return inputString.substring(8,10)+'-'+inputString.substring(5,7)+'-'+inputString.substring(0,4);
+export function convertDateTimeToDate(inputString) {
+    return inputString.substring(8, 10) + '-' + inputString.substring(5, 7) + '-' + inputString.substring(0, 4);
 }
 
-export function convertDateTimeToTime(inputString){
-    return inputString.substring(11,13)+':'+inputString.substring(14,16);
+export function convertDateTimeToTime(inputString) {
+    return inputString.substring(11, 13) + ':' + inputString.substring(14, 16);
 }
 
-export function convertDateAndTimeToDateTime(inputDate,inputTime){
-    return inputDate.substring(6,10)+'-'+inputDate.substring(3,5)+'-'+inputDate.substring(0,2)+'T'+inputTime+':00.000+0000'
+export function convertDateAndTimeToDateTime(inputDate, inputTime) {
+    return inputDate.substring(6, 10) + '-' + inputDate.substring(3, 5) + '-' + inputDate.substring(0, 2) + 'T' + inputTime + ':00.000+0000'
 }
-export function getApiUrl(){
+export function getApiUrl() {
     // return "http://192.168.1.17:8080";
     return "https://medtest-backend.herokuapp.com";
 }
 
-export function convertMoney(_price){
+export function convertMoney(_price) {
     let price = _price.toString()
-    let index = price.length -1
+    let index = price.length - 1
     let result = ''
     while (index >= 3) {
         // console.log(price+": "+price.substring(index-2,index+1)+', '+index)
-        result = '.'+price.substring(index-2,index+1)+result
-        index-=3
+        result = '.' + price.substring(index - 2, index + 1) + result
+        index -= 3
     }
-    result = price.substring(0,index+1)+result
+    result = price.substring(0, index + 1) + result
     return result
 }
 
-export function getStateName(status){
+export function getStateName(status) {
     switch (status) {
         case 'pending':
             return 'Đang đợi y tá nhận đơn';
@@ -60,10 +60,14 @@ export function getStateName(status){
         case 'relostsample':
             return 'Đang đợi lấy lại mẫu do điều phối viên làm mất';
             break;
-        } 
+        case 'canceled':
+            return 'Đã hủy';
+            break;
+    }
+
 }
-export function getStateColor(status){
-        switch (status) {
+export function getStateColor(status) {
+    switch (status) {
         case 'pending':
         case 'coordinatorlostsample':
             return '#ffd66f';
@@ -83,6 +87,9 @@ export function getStateColor(status){
             // return '#000';
             return '#a4d57b';
             break;
-        
-        } 
+        case 'canceled':
+            return '#6398d6';
+            break;
+
     }
+}

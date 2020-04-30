@@ -98,7 +98,9 @@ class RequestListHistoryScreen extends Component {
 
 
     render(){
-        
+        debugger;
+        const a = this.props.token;
+        const b = this.state.nurseId;
         return(
                 <View style={{flex:1}}>
                     <ScreenTopMenuBack navigation={this.props.navigation} backScreen="HomeScreen"></ScreenTopMenuBack>
@@ -128,6 +130,8 @@ class RequestListHistoryScreen extends Component {
                                                 cust_phone={item.customerPhoneNumber}
                                                 cust_DOB={item.customerDOB}
                                                 appoint_address={item.requestAddress}
+                                                town_name = {item.requestTownName}
+                                                district_name = {item.requestDistrictName}
                                                 appoint_date={item.requestMeetingTime}
                                                 nurse_name={item.nurseName}
                                                 nurse_id={item.nurseID}

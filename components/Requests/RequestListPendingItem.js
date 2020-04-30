@@ -32,6 +32,8 @@ export default class RequestListPendingItem extends Component {
                                 requestId: this.props.requestId,
                                 name: this.props.cust_name,
                                 address: this.props.appoint_address,
+                                townName: this.props.town_name,
+                                districtName : this.props.district_name,
                                 createdTime:  convertDateTimeToDate(this.props.request_createTime),
                                 updatedTime:  this.props.request_updateTime,
                                 phone: this.props.cust_phone,
@@ -71,7 +73,7 @@ export default class RequestListPendingItem extends Component {
                 <View style={[styles.requestListTextContainer,{
                     paddingBottom:10,
                 }]}>
-                    <Text style={{fontSize:15}}>{"Địa chỉ: "+this.props.appoint_address}</Text>
+                    <Text style={{fontSize:15}}>{"Địa chỉ: "+this.props.appoint_address + ', ' + this.props.town_name + ', ' + this.props.district_name}</Text>
                 </View>               
             </TouchableOpacity>             
             </View> 

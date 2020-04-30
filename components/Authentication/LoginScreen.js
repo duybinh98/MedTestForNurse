@@ -5,11 +5,8 @@ import ScreenTopMenu from './../Common/ScreenTopMenu';
 import { Field, reduxForm } from 'redux-form';
 import { CommonActions } from '@react-navigation/native';
 import { connect } from 'react-redux';
-// import action from '../Store/Action/actions';
-import { login } from '../Store/Reducers/LoginReducer';
-// import { getApiUrl } from './../Common/CommonFunction';
-// import { loadNurseInfor } from '../Store/Reducers/LoadInforReducer';
-import {loadNurseInfor} from '../Store/Reducers/LoadInforReducer';
+import { login } from '../Reducers/LoginReducer';
+import {loadNurseInfor} from '../Reducers/LoadInforReducer';
 import renderField from '../../Validate/RenderField'
 
 //validate conditions
@@ -103,7 +100,7 @@ class LoginComponent extends Component {
                 console.log('error at screen'+this.props.LoginError)
                 // Alert.alert(this.props.LoginError.message);
                 }
-        },10000)
+        },20000)
 
 
     }
@@ -115,7 +112,8 @@ class LoginComponent extends Component {
                 <View>
                     <View style={styles.logoContainer}>
                         <Image
-                            source={{ uri: 'https://getdrawings.com/free-icon/react-icon-69.png' }}
+                            // source={{ uri: 'https://getdrawings.com/free-icon/react-icon-69.png' }}
+                            source={require('./../../Image/LogoMedtest.png')}
                             style={styles.logo}
                         ></Image>
                         <View style={styles.titleArea} >

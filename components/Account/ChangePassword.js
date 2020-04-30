@@ -7,8 +7,8 @@ import { Field, reduxForm } from 'redux-form';
 import { CommonActions } from '@react-navigation/native';
 import {getApiUrl} from './../Common/CommonFunction';
 import renderField from '../../Validate/RenderField';
-import { load as loadAccount } from '../Store/Reducers/InitialValue';
-import { loadNurseInfor } from '../Store/Reducers/LoadInforReducer';
+import { load as loadAccount } from '../Reducers/InitialValue';
+import { loadNurseInfor } from  '../Reducers/LoadInforReducer';
 import { connect } from 'react-redux';
 
 

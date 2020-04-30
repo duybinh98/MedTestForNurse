@@ -39,6 +39,22 @@ export default class HomeScreen extends Component {
         });
     }
     handleBackButton = () => {
+        Alert.alert(
+            'Cảnh báo!',
+            'Bạn có muốn tắt ứng dụng?',
+            [{
+                text: 'Hủy',
+                onPress: () => { return null },
+                style: 'cancel',
+            },
+            {
+                text: 'Xác nhận',
+                onPress: () => BackHandler.exitApp(),
+            },
+            ], {
+            cancelable: false,
+        },
+        );
         return true;
     };
     componentWillUnmount() {
@@ -48,6 +64,9 @@ export default class HomeScreen extends Component {
     }
     componentDidMount() {
         this.callApiArticlesList();
+        this.props.navigation.addListener('focus', () => {
+            this.callApiArticlesList();
+        });
     }
 
 

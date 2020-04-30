@@ -8,7 +8,7 @@ import RequestListPendingItem from './RequestListPendingItem';
 import requestsList from './../../Data/RequestsList';
 import testList from './../../Data/Test';
 import { getApiUrl } from './../Common/CommonFunction';
-import { loadNurseInfor } from '../Store/Reducers/LoadInforReducer'
+import { loadNurseInfor } from '../Reducers/LoadInforReducer'
 
 
 
@@ -60,10 +60,39 @@ class RequestListPendingScreen extends Component {
             .then(
                 (result) => {
                     console.log(result)
-                    this.setState(previousState => ({
-                        requestList: result,
-                        dataChanged: !this.state.dataChanged,
-                    }));
+                    if (result.success == false) {
+                        if (result.message == 'Hệ thống đang xử lý. Vui lòng tải lại!') {
+                            Alert.alert(
+                                'Hệ thống: ',
+                                'Hệ thống đang xử lý. Vui lòng tải lại',
+                                [
+                                    {
+                                        text: 'Hủy',
+                                        onPress: () => {
+                                            return null;
+                                        },
+                                    },
+                                    {
+                                        text: 'Tải lại',
+                                        onPress: () => {
+                                            setTimeout(() => {
+                                                this.callApiGetRequestPendingList();
+                                            }, 5000);
+                                        },
+                                    },
+                                ],
+                            );
+                        } else {
+                            this.setState({
+                                requestList: [],
+                            });
+                        }
+                    } else {
+                        this.setState(previousState => ({
+                            requestList: result,
+                            dataChanged: !this.state.dataChanged,
+                        }));
+                    }
                 },
                 (error) => {
                     console.log(error)
@@ -89,7 +118,7 @@ class RequestListPendingScreen extends Component {
 
     sortByCreateTime() {
         const _requestList = this.state.requestList;
-        if (_requestList != null) _requestList.sort((a, b) => b.requestCreatedTime.localeCompare(a.requestCreatedTime))
+        // if (_requestList != null) _requestList.sort((a, b) => b.requestCreatedTime.localeCompare(a.requestCreatedTime))
         return _requestList;
     }
 
@@ -102,7 +131,9 @@ class RequestListPendingScreen extends Component {
 
 
     render() {
-
+        debugger;
+        const a = this.props.token;
+        const b = this.state.nurseId;
         return (
             <View style={{ flex: 1 }}>
                 <ScreenTopMenuBack navigation={this.props.navigation} backScreen="HomeScreen"></ScreenTopMenuBack>
@@ -160,11 +191,13 @@ class RequestListPendingScreen extends Component {
                                         <RequestListPendingItem
                                             requestId={item.requestID}
                                             request_createTime={item.requestCreatedTime}
-                                            request_updateTime = {item.requestUpdatedTime}
+                                            request_updateTime={item.requestUpdatedTime}
                                             cust_name={item.customerName}
                                             cust_phone={item.customerPhoneNumber}
                                             cust_DOB={item.customerDOB}
                                             appoint_address={item.requestAddress}
+                                            town_name={item.requestTownName}
+                                            district_name={item.requestDistrictName}
                                             appoint_date={item.requestMeetingTime}
                                             nurse_name={item.nurseName}
                                             nurse_id={item.nurseID}

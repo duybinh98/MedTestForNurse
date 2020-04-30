@@ -6,9 +6,9 @@ import { CommonActions } from '@react-navigation/native';
 import ScreenTopMenuBack from '../Common/ScreenTopMenuBack';
 import { getApiUrl, convertDateTimeToDate } from '../Common/CommonFunction';
 import { connect } from 'react-redux';
-import { login } from '../Store/Reducers/LoginReducer';
+import { login } from '../Reducers/LoginReducer';
 // import { getApiUrl } from './../Common/CommonFunction';
-import { loadNurseInfor } from '../Store/Reducers/LoadInforReducer';
+import { loadNurseInfor } from '../Reducers/LoadInforReducer';
 
 
 const { width: WIDTH } = Dimensions.get('window')
@@ -55,7 +55,7 @@ class nurseInformation extends Component {
                         console.log("Error")
                     }
                 });
-            }, 3000);
+            }, 15000);
         }
     }
     componentDidMount() {
@@ -81,7 +81,7 @@ class nurseInformation extends Component {
                     console.log("Error")
                 }
             });
-        }, 3000);
+        }, 15000);
     }
     callApiGetDistrictCode() {
         fetch(getApiUrl() + "/management/districts/district-town-list")
@@ -151,7 +151,7 @@ class nurseInformation extends Component {
                     <View style={styles.logoContainer}>
                         <ImageBackground
                             source={{ uri: this.state.nurseInfor ? this.props.nurseInfor.image : '' }}
-                            style={styles.logo} >                          
+                            style={styles.logo} >
                         </ImageBackground>
                     </View>
                 </View>
@@ -169,10 +169,15 @@ class nurseInformation extends Component {
                         <Text style={styles.textInfor} >Giới tính: {this.state.nurseInfor ? this.state.nurseInfor.gender === 0 ? "Nữ" : "Nam" : ''}</Text>
                     </View>
                 </View>
-
                 <View style={styles.textContainer}>
-                    <Text style={styles.textInfor} 
-                    >Địa chỉ: {this.state.nurseInfor ? this.state.nurseInfor.address + ', ' + this.state.townName + ', ' + this.state.districtName : ''}</Text>
+                    <Text style={styles.textInfor} >
+                        {/* Địa chỉ: {this.state.customerInfor ? this.state.customerInfor.address + ', ' + this.state.townName + ', ' + this.state.districtName  : ""} */}
+                            Địa chỉ:  {
+                            this.state.nurseInfor ?
+                                this.state.townName == '' || this.state.districtName == '' ? "Đang tải..."
+                                    : this.state.nurseInfor.address + ', ' + this.state.townName + ', ' + this.state.districtName
+                                : ""}
+                    </Text>
                 </View>
                 <View style={styles.textContainer}>
                     <Text style={styles.textInfor} >Email: {this.state.nurseInfor ? this.state.nurseInfor.email : ''}</Text>
