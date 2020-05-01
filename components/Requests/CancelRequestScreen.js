@@ -14,14 +14,14 @@ const required = values => values ? undefined : 'Thiếu lý do hủy xét nghi�
 
 const renderField = ({
     iconName, iconType, keyboardType, meta: { touched, error, warning }, isSecureText,
-    input: { onChange, ...restInput }, placeholder, isEditable, isMultiline, numberOfLines
+    input: { onChange, ...restInput }, placeholder, isEditable, isMultiline, numberOfLines, maxLength
 }) => {
     return (
         <View style={{ flex: 1 }}>
             <View style={styles.inputContainer}>
                 <TextInput style={styles.input} placeholder={placeholder} secureTextEntry={isSecureText}
                     keyboardType={keyboardType} editable={isEditable} numberOfLines={4}
-                    multiline={true}
+                    multiline={true} maxLength = {maxLength}
                     onChangeText={onChange} {...restInput} autoCapitalize='none'
                 ></TextInput>
 
@@ -221,7 +221,7 @@ class CancelRequestScreen extends Component {
                         </View>
                     </View>
                     <Field name="reason" keyboardType="default" component={renderField}
-                        placeholder="Lý do" secureText={true}
+                        placeholder="Lý do" secureText={true} maxLength = {200}
                         onChange={(text) => { this.setState({ reason: text }) }}
                         validate={[required]}
                     />

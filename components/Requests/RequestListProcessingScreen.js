@@ -58,10 +58,39 @@ class RequestListProcessingScreen extends Component {
             .then(
                 (result) => {
                     console.log(result)
-                    this.setState(previousState => ({
-                        requestList: result,
-                        dataChanged: !this.state.dataChanged,
-                    }));
+                    if (result.success == false) {
+                        if (result.message == 'Hệ thống đang xử lý. Vui lòng tải lại!') {
+                            Alert.alert(
+                                'Hệ thống: ',
+                                'Hệ thống đang xử lý. Vui lòng tải lại',
+                                [
+                                    {
+                                        text: 'Hủy',
+                                        onPress: () => {
+                                            return null;
+                                        },
+                                    },
+                                    {
+                                        text: 'Tải lại',
+                                        onPress: () => {
+                                            setTimeout(() => {
+                                                this.callApiGetRequestHistoryList();
+                                            }, 5000);
+                                        },
+                                    },
+                                ],
+                            );
+                        } else {
+                            this.setState({
+                                requestList: [],
+                            });
+                        }
+                    } else {
+                        this.setState(previousState => ({
+                            requestList: result,
+                            dataChanged: !this.state.dataChanged,
+                        }));
+                    }         
                 },
                 (error) => {
                     console.log(error)
@@ -91,7 +120,8 @@ class RequestListProcessingScreen extends Component {
         let result = [];
         let index = _requestList.length - 1;
         while (index >= 0) {
-            if (_requestList[index].requestStatus === 'accepted' || _requestList[index].requestStatus === 'lostsample') {
+            if (_requestList[index].requestStatus === 'accepted' || _requestList[index].requestStatus === 'lostsample' 
+             || _requestList[index].requestStatus === 'relostsample'  || _requestList[index].requestStatus === 'reaccepted') {
                 result.push(_requestList[index]);
             }
             index -= 1;
@@ -104,7 +134,7 @@ class RequestListProcessingScreen extends Component {
         let result = [];
         let index = _requestList.length - 1;
         while (index >= 0) {
-            if (_requestList[index].requestStatus === 'transporting') {
+            if (_requestList[index].requestStatus === 'transporting' || _requestList[index].requestStatus === 'retransporting') {
                 result.push(_requestList[index]);
             }
             index -= 1;
@@ -117,7 +147,7 @@ class RequestListProcessingScreen extends Component {
         let result = [];
         let index = _requestList.length - 1;
         while (index >= 0) {
-            if (_requestList[index].req_status === 'lostsample') {
+            if (_requestList[index].req_status === 'lostsample' || _requestList[index].req_status === 'relostsample') {
                 result.push(_requestList[index]);
             }
             index -= 1;

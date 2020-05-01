@@ -3,20 +3,20 @@ import { Text, View, StyleSheet, Dimensions, } from 'react-native';
 import { Icon } from 'react-native-elements';
 import { TextInput } from 'react-native-gesture-handler';
 
-
+//validate conditions
+export const required = value => value ? undefined : 'Bắt buộc';
+export const isNumber = value => value && isNaN(Number(value)) ? 'Phải nhập số điện thoại' : undefined;
+export const isPhonenumber = value => value && value.replace(/([^0-9])+/i, "").length == 10 ? undefined : 'Số điện thoại phải có 10 số';
+export const isWeakPassword = value => value && value.length >= 6 ? undefined : 'Mật khẩu phải có ít nhất 6 kí tự';
+export const isEmail = values =>
+values && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values) ? 'Email không hợp lệ' : undefined;
+export const isOTP = values => values && value.replace(/([^0-9])+/i, "").length == 6 ? undefined : 'Mã xác thực có 6 chữ số';
 
 //Field input for redux-form
 const renderField = ({
     iconName, iconType, keyboardType, meta: { touched, error, warning }, isSecureText,
-    input: { onChange, ...restInput }, placeholder, isEditable,isMultiline , numberOfLines
+    input: { onChange, ...restInput }, placeholder, isEditable,isMultiline , numberOfLines , maxLength
 }) => {
-    //validate conditions
-    const required = values => values ? undefined : 'Bắt buộc';
-    const isNumber = values => values && isNaN(Number(values)) ? 'Phải nhập số' : undefined;
-    const isPhonenumber = values => values && values.length == 10 ? undefined : 'Phải có 10 số';
-    const isEmail = values =>
-        values && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values) ? 'Email không hợp lệ' : undefined;
-    const isWeakPassword = values => values && values.length == 6 ? undefined : 'Mật khẩu phải có 6 kí tự';
     return (
         <View style={{ flex: 1 }}>
             <View style={styles.inputContainer}>
@@ -29,7 +29,7 @@ const renderField = ({
                 ></Icon>
                 <TextInput style={styles.input} placeholder={placeholder} secureTextEntry={isSecureText}
                     keyboardType={keyboardType} editable={isEditable} numberOfLines={numberOfLines}
-                    multiline={isMultiline}
+                    multiline={isMultiline} maxLength = {maxLength}
                     onChangeText={onChange} {...restInput} autoCapitalize='none'
                 ></TextInput>
 

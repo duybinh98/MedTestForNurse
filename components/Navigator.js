@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Linking, Alert, ImageBackground } from 'react-native';
 import { Button, Icon } from 'react-native-elements';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
@@ -80,7 +80,7 @@ function CustomDrawerContent(props, state, navigatorProps) {
     <View style={{ flex: 1 }}>
       <TouchableOpacity
         style={{
-          height: 130,
+          height: 200,
           flexDirection: 'column',
           alignItems: 'flex-start',
           justifyContent: 'flex-end',
@@ -91,7 +91,25 @@ function CustomDrawerContent(props, state, navigatorProps) {
         }}
         onPress={() => props.navigation.navigate('NurseInformation')}
       >
-        <Icon
+         {navigatorProps.nurseInfor == null ?
+          <Icon
+            name='user'
+            type='antdesign'
+            color='#0A6ADA'
+            size={60}
+            iconStyle={{
+              marginLeft: 10,
+              marginBottom: 15
+            }}
+          >
+          </Icon>
+          : <ImageBackground
+            source={{ uri: navigatorProps.nurseInfor.image ? navigatorProps.nurseInfor.image : '' }}
+            // source={{ uri: '' }}
+            style={styles.logo} >
+          </ImageBackground>
+        }
+        {/* <Icon
           name='user'
           type='antdesign'
           color='#0A6ADA'
@@ -101,7 +119,7 @@ function CustomDrawerContent(props, state, navigatorProps) {
             marginBottom: 5
           }}
         >
-        </Icon>
+        </Icon> */}
         <Text style={{
           fontSize: 15,
           color: 'black',
@@ -270,8 +288,13 @@ const styles = StyleSheet.create({
   navigatorButtonText: {
     fontSize: 18,
     marginLeft: 7
-  }
-
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom : 10
+  },
 });
 
 

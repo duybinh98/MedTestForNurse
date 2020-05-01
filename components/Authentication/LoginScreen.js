@@ -7,14 +7,7 @@ import { CommonActions } from '@react-navigation/native';
 import { connect } from 'react-redux';
 import { login, logout} from '../Reducers/LoginReducer';
 import {loadNurseInfor} from '../Reducers/LoadInforReducer';
-import renderField from '../../Validate/RenderField'
-
-//validate conditions
-const required = values => values ? undefined : 'Bắt buộc';
-const isWeakPassword = value => value && value.length >= 6 ? undefined : 'Mật khẩu phải có ít nhất 6 kí tự';
-const isNumber = values => values && isNaN(Number(values)) ? 'Phải nhập số' : undefined;
-const isPhonenumber = values => values && values.length == 10 ? undefined : 'Phải có 10 số';
-
+import renderField, {required, isWeakPassword, isNumber, isPhonenumber} from '../../Validate/RenderField'
 
 class LoginComponent extends Component {
     constructor(props) {
@@ -95,7 +88,6 @@ class LoginComponent extends Component {
             }  
             else {
                 console.log('error at screen'+this.props.LoginError)
-                // Alert.alert(this.props.LoginError.message);
                 }
         },18000)
 
@@ -105,11 +97,9 @@ class LoginComponent extends Component {
         const { handleSubmit } = this.props;
         return (
             <ScrollView style={{ flex: 1 }}>
-                {/* <ScreenTopMenu {...this.props} ></ScreenTopMenu> */}
                 <View>
                     <View style={styles.logoContainer}>
                         <Image
-                            // source={{ uri: 'https://getdrawings.com/free-icon/react-icon-69.png' }}
                             source={require('./../../Image/LogoMedtest.png')}
                             style={styles.logo}
                         ></Image>
@@ -121,7 +111,7 @@ class LoginComponent extends Component {
                 </View>
                 <View style={styles.fieldContainer}>
                     <Field name="phonenumber" keyboardType="phone-pad" component={renderField} iconName="cellphone"
-                        iconType="material-community" placeholder="Số điện thoại" isSecureText={false}
+                        iconType="material-community" placeholder="Số điện thoại" isSecureText={false} maxLength = {10}
                         onChange={(text) => { this.setState({ phoneNumber: text }) }}
                         validate={[required, isNumber, isPhonenumber]}
                     />
