@@ -81,7 +81,7 @@ class nurseInformation extends Component {
                     console.log("Error")
                 }
             });
-        }, 15000);
+        }, 20000);
     }
     callApiGetDistrictCode() {
         fetch(getApiUrl() + "/management/districts/district-town-list")
@@ -171,7 +171,6 @@ class nurseInformation extends Component {
                 </View>
                 <View style={styles.textContainer}>
                     <Text style={styles.textInfor} >
-                        {/* Địa chỉ: {this.state.customerInfor ? this.state.customerInfor.address + ', ' + this.state.townName + ', ' + this.state.districtName  : ""} */}
                             Địa chỉ:  {
                             this.state.nurseInfor ?
                                 this.state.townName == '' || this.state.districtName == '' ? "Đang tải..."

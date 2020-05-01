@@ -7,6 +7,8 @@ import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import TestCategoryItem from './TestCategoryItem'
 import TestViewItem from './TestViewItem'
 import testList from './../../Data/Test'
+import { login, logout } from '../Reducers/LoginReducer';
+import { loadNurseInfor } from '../Reducers/LoadInforReducer';
 import { getApiUrl, convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor, convertMoney } from './../Common/CommonFunction'
 
 class RequestViewScreen extends Component {
@@ -108,18 +110,34 @@ class RequestViewScreen extends Component {
                     })
                     console.log(result)
                     if (result.success == false) {
-                        Alert.alert(
-                            'Thông báo',
-                            result.message,
-                            [
-                                {
+                        if (result.message == 'Người dùng hiện tại đang bị khoá! Vui lòng liên hệ tới phòng khám để xử lý!') {
+                            Alert.alert(
+                                'Thông báo',
+                                result.message,
+                                [
+                                  {
                                     text: 'Xác nhận',
                                     onPress: () => {
-                                        this.props.navigation.navigate('RequestListProcessingScreen');
+                                      this.props.logout();
+                                      this.props.navigation.navigate('LoginScreen');
                                     },
-                                },
-                            ],
-                        );
+                                  },
+                                ],
+                              );
+                        } else {
+                            Alert.alert(
+                                'Thông báo',
+                                result.message,
+                                [
+                                    {
+                                        text: 'Xác nhận',
+                                        onPress: () => {
+                                            this.props.navigation.navigate('RequestListProcessingScreen');
+                                        },
+                                    },
+                                ],
+                            );
+                        }
                     } else {
                         this.props.navigation.dispatch(
                             CommonActions.navigate({
@@ -557,6 +575,7 @@ const mapStateToProps = (state) => {
 const mapStateToDispatch = (dispatch) => {
     return {
         load: (nurseInfor) => dispatch(loadNurseInfor(nurseInfor)),
+        logout: () => dispatch(logout()),
     };
 }
 

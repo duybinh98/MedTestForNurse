@@ -29,20 +29,11 @@ function loadNurseFromState(nurseInfor) {
         if (nurseInfor !== null) {
             return resolve(true);
         } else {
-            return reject(new Error('Load customer information failed'));
+            return reject(new Error('Load nurse information failed'));
         }
     }); 
 }
 
-// function loadCustomerFromState(nurseInfor) {
-//     setTimeout(() => {
-//         try {
-//             return new Promise.resolve(true);
-//         } catch (error) {
-//             return new  Promise.reject(new Error('Load customer information failed'));
-//         }
-//     },3000)   
-// }
 export function loadNurseInfor(nurseInfor){
     return dispatch => {
         dispatch(setLoadPending(true));

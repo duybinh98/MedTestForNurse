@@ -1,34 +1,34 @@
-import React, {Component} from 'react';
-import {View, StyleSheet, Dimensions, Text, TouchableOpacity, ScrollView, FlatList} from 'react-native';
+import React, { Component } from 'react';
+import { View, StyleSheet, Dimensions, Text, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { connect } from 'react-redux';
 import ScreenTopMenuBack from './../Common/ScreenTopMenuBack';
 import ScreenBottomMenu from './../Common/ScreenBottomMenu';
 import RequestListPendingItem from './RequestListPendingItem';
 import requestsList from './../../Data/RequestsList'
 import testList from './../../Data/Test'
-import {getApiUrl} from './../Common/CommonFunction'
+import { getApiUrl } from './../Common/CommonFunction'
 
 
 class RequestListProcessingScreen extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            nurseId: this.props.nurseInfor? this.props.nurseInfor.id: '-1',
+            nurseId: this.props.nurseInfor ? this.props.nurseInfor.id : '-1',
             isRightButtonSelected: false,
-            Button1Pressed:true,
-            Button2Pressed:false,
-            Button3Pressed:false,
+            Button1Pressed: true,
+            Button2Pressed: false,
+            Button3Pressed: false,
             dataChanged: true,
             testsList: [],
-            requestList: this.props.route.params.requestProcessingList? this.props.route.params.requestProcessingList : [],
-            requestViewList: this.props.route.params.requestProcessingList? this.props.route.params.requestProcessingList : [],
+            requestList: this.props.route.params.requestProcessingList ? this.props.route.params.requestProcessingList : [],
+            requestViewList: this.props.route.params.requestProcessingList ? this.props.route.params.requestProcessingList : [],
         };
         this.getAcceptedList = this.getAcceptedList.bind(this);
         this.getTransportingList = this.getTransportingList.bind(this);
         this.getLostSampleList = this.getLostSampleList.bind(this);
     }
-    
-    componentDidMount(){
+
+    componentDidMount() {
         this.callApiGetRequestProcessingList();
         this.callApiTestList();
         this.props.navigation.addListener("focus", () => {
@@ -36,147 +36,148 @@ class RequestListProcessingScreen extends Component {
         })
     }
 
-    // componentDidUpdate  (prevProps, prevState) {
-    //      if (prevProps.route.params !== this.props.route.params) {
-    //         this.setState(previousState => ({ 
-    //             dataChanged: !this.state.dataChanged,
-    //         }));
-    //     }
-    // }
+    componentDidUpdate(prevProps) {
+        if (prevProps !== this.props) {
+            this.setState({
+                nurseId: this.props.nurseInfor ? this.props.nurseInfor.id : '-1',
+            });
+            this.callApiGetRequestProcessingList();
+        }
+    }
 
-    callApiGetRequestProcessingList(){
-        fetch(getApiUrl()+'/users/nurses/'+this.state.nurseId+'/list/handling', {
+    callApiGetRequestProcessingList() {
+        fetch(getApiUrl() + '/users/nurses/' + this.state.nurseId + '/list/handling', {
             method: 'GET',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer '+this.props.token,
+                Authorization: 'Bearer ' + this.props.token,
             }
         })
-        .then(res => res.json())
-        .then(
-            (result) => {
-                console.log(result)
-                this.setState(previousState => ({
-                    requestList: result,
-                    dataChanged: !this.state.dataChanged,
-                }));
-            },            
-            (error) => {
-                console.log(error)
-            }
-        )
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    console.log(result)
+                    this.setState(previousState => ({
+                        requestList: result,
+                        dataChanged: !this.state.dataChanged,
+                    }));
+                },
+                (error) => {
+                    console.log(error)
+                }
+            )
     }
 
 
     callApiTestList = async () => {
-        fetch(getApiUrl()+"/test-types/type-test")
-        .then(res => res.json())
-        .then(
-            (result) => {
-            this.setState(previousState => ({
-                testsList: result,
-            }));
-            },            
-            (error) => {
-                console.log(error)
-            }
-        )  
+        fetch(getApiUrl() + "/test-types/type-test")
+            .then(res => res.json())
+            .then(
+                (result) => {
+                    this.setState(previousState => ({
+                        testsList: result,
+                    }));
+                },
+                (error) => {
+                    console.log(error)
+                }
+            )
     }
 
 
-    getAcceptedList(){
+    getAcceptedList() {
         let _requestList = this.state.requestList;
         let result = [];
         let index = _requestList.length - 1;
         while (index >= 0) {
             if (_requestList[index].requestStatus === 'accepted' || _requestList[index].requestStatus === 'lostsample') {
                 result.push(_requestList[index]);
-                }
+            }
             index -= 1;
-        }        
+        }
         return result;
     }
 
-    getTransportingList(){
+    getTransportingList() {
         let _requestList = this.state.requestList;
         let result = [];
         let index = _requestList.length - 1;
         while (index >= 0) {
             if (_requestList[index].requestStatus === 'transporting') {
                 result.push(_requestList[index]);
-                }
+            }
             index -= 1;
         }
         return result;
     }
 
-    getLostSampleList(){
+    getLostSampleList() {
         let _requestList = this.state.requestList;
         let result = [];
         let index = _requestList.length - 1;
         while (index >= 0) {
             if (_requestList[index].req_status === 'lostsample') {
                 result.push(_requestList[index]);
-                }
+            }
             index -= 1;
         }
         return result;
     }
 
-    render(){
-        return(
-                <View style={{flex:1}}>
-                    <ScreenTopMenuBack navigation={this.props.navigation} backScreen="HomeScreen"></ScreenTopMenuBack>
-                    <View 
-                        style ={styles.background}>            
-                        <View style={styles.titleArea}>     
-                            <Text style={{fontSize:22,color:'#25345D'}}>Đơn đang nhận</Text>
-                        </View>
-                        <View style = {{flex:1}}>
-                            <View style={[styles.titleArea,{
-                                height:60,
-                                marginBottom:10,
-                                paddingLeft:10,
-                                paddingRight:10,
-                                }]}>     
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        this.setState(previousState => ({ 
-                                            Button1Pressed: true,
-                                            Button2Pressed: false,
-                                            Button3Pressed: false,
-                                            dataChanged: !this.state.dataChanged,
-                                            }))
-                                    }}
-                                    style ={[styles.mainButton,{
-                                        backgroundColor:this.state.Button1Pressed?'#6fc02d':'#b1de8c',
-                                        borderWidth:this.state.Button1Pressed? 3:0,
-                                        borderBottomLeftRadius:10,
-                                        borderTopLeftRadius:10
-                                    }]}                                
-                                    >
-                                    <Text style={{fontSize:17}}>Chưa lấy mẫu</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        this.setState(previousState => ({ 
-                                            Button1Pressed: false,
-                                            Button2Pressed: true,
-                                            Button3Pressed: false,
-                                            dataChanged: !this.state.dataChanged,
-                                            }))
-                                    }}
-                                    style ={[styles.mainButton,{
-                                        backgroundColor:this.state.Button2Pressed?'#fba739':'#fccd90',
-                                        borderWidth:this.state.Button2Pressed? 3:0,   
-                                        borderBottomRightRadius:10,
-                                        borderTopRightRadius:10                          
-                                    }]}                                
-                                    >
-                                    <Text style={{fontSize:17}}>Đã lấy mẫu</Text>
-                                </TouchableOpacity>  
-                                {/* <TouchableOpacity
+    render() {
+        return (
+            <View style={{ flex: 1 }}>
+                <ScreenTopMenuBack navigation={this.props.navigation} backScreen="HomeScreen"></ScreenTopMenuBack>
+                <View
+                    style={styles.background}>
+                    <View style={styles.titleArea}>
+                        <Text style={{ fontSize: 22, color: '#25345D' }}>Đơn đang nhận</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <View style={[styles.titleArea, {
+                            height: 60,
+                            marginBottom: 10,
+                            paddingLeft: 10,
+                            paddingRight: 10,
+                        }]}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    this.setState(previousState => ({
+                                        Button1Pressed: true,
+                                        Button2Pressed: false,
+                                        Button3Pressed: false,
+                                        dataChanged: !this.state.dataChanged,
+                                    }))
+                                }}
+                                style={[styles.mainButton, {
+                                    backgroundColor: this.state.Button1Pressed ? '#6fc02d' : '#b1de8c',
+                                    borderWidth: this.state.Button1Pressed ? 3 : 0,
+                                    borderBottomLeftRadius: 10,
+                                    borderTopLeftRadius: 10
+                                }]}
+                            >
+                                <Text style={{ fontSize: 17 }}>Chưa lấy mẫu</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    this.setState(previousState => ({
+                                        Button1Pressed: false,
+                                        Button2Pressed: true,
+                                        Button3Pressed: false,
+                                        dataChanged: !this.state.dataChanged,
+                                    }))
+                                }}
+                                style={[styles.mainButton, {
+                                    backgroundColor: this.state.Button2Pressed ? '#fba739' : '#fccd90',
+                                    borderWidth: this.state.Button2Pressed ? 3 : 0,
+                                    borderBottomRightRadius: 10,
+                                    borderTopRightRadius: 10
+                                }]}
+                            >
+                                <Text style={{ fontSize: 17 }}>Đã lấy mẫu</Text>
+                            </TouchableOpacity>
+                            {/* <TouchableOpacity
                                     onPress={() => {
                                         this.setState(previousState => ({ 
                                             Button1Pressed: false,
@@ -195,46 +196,46 @@ class RequestListProcessingScreen extends Component {
                                     >
                                     <Text style={{fontSize:20}}>!</Text>
                                 </TouchableOpacity>                     */}
-                            </View>
-                            <FlatList style={{                    
-                                flex:1
-                                }}
-                                showsVerticalScrollIndicator={false}
-                                data={this.state.Button1Pressed ? this.getAcceptedList() : this.state.Button2Pressed ? this.getTransportingList() : this.getLostSampleList()}
-                                extraData={this.state.dataChanged} 
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={({item}) => {
-                                        return (
-                                            <View>                                
-                                            <RequestListPendingItem
-                                                requestId={item.requestID}
-                                                request_createTime={item.requestCreatedTime}
-                                                request_updateTime = {item.requestUpdatedTime}
-                                                cust_name={item.customerName}
-                                                cust_phone={item.customerPhoneNumber}
-                                                cust_DOB={item.customerDOB}
-                                                appoint_address={item.requestAddress}
-                                                town_name = {item.requestTownName}
-                                                district_name = {item.requestDistrictName}
-                                                appoint_date={item.requestMeetingTime}
-                                                nurse_name={item.nurseName}
-                                                nurse_id={item.nurseID}
-                                                selectedTest={item.lsSelectedTest}
-                                                req_amount={item.requestAmount}
-                                                req_status={item.requestStatus}
-                                                testList={this.state.testsList}
-                                                navigation={this.props.navigation}
-                                            />   
-                                            </View>                             
-                                        );
-                                    }}
-                                >                   
-                            </FlatList>
                         </View>
+                        <FlatList style={{
+                            flex: 1
+                        }}
+                            showsVerticalScrollIndicator={false}
+                            data={this.state.Button1Pressed ? this.getAcceptedList() : this.state.Button2Pressed ? this.getTransportingList() : this.getLostSampleList()}
+                            extraData={this.state.dataChanged}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => {
+                                return (
+                                    <View>
+                                        <RequestListPendingItem
+                                            requestId={item.requestID}
+                                            request_createTime={item.requestCreatedTime}
+                                            request_updateTime={item.requestUpdatedTime}
+                                            cust_name={item.customerName}
+                                            cust_phone={item.customerPhoneNumber}
+                                            cust_DOB={item.customerDOB}
+                                            appoint_address={item.requestAddress}
+                                            town_name={item.requestTownName}
+                                            district_name={item.requestDistrictName}
+                                            appoint_date={item.requestMeetingTime}
+                                            nurse_name={item.nurseName}
+                                            nurse_id={item.nurseID}
+                                            selectedTest={item.lsSelectedTest}
+                                            req_amount={item.requestAmount}
+                                            req_status={item.requestStatus}
+                                            testList={this.state.testsList}
+                                            navigation={this.props.navigation}
+                                        />
+                                    </View>
+                                );
+                            }}
+                        >
+                        </FlatList>
                     </View>
-                    
-                    <ScreenBottomMenu {...this.props}></ScreenBottomMenu>
-                </View>  
+                </View>
+
+                <ScreenBottomMenu {...this.props}></ScreenBottomMenu>
+            </View>
         );
     }
 }
@@ -260,29 +261,29 @@ export default connect(mapStateToProps, mapStateToDispatch)(RequestListProcessin
 
 
 const styles = StyleSheet.create({
-    background:{
-        flex:1, 
+    background: {
+        flex: 1,
         backgroundColor: '#f1f0f0',
         flexDirection: 'column',
         alignItems: 'center'
     },
-    titleArea:{
+    titleArea: {
         height: 50,
-        width: Dimensions.get('window').width-20,
+        width: Dimensions.get('window').width - 20,
         backgroundColor: 'white',
-        marginTop:15,
-        marginBottom:5,
+        marginTop: 15,
+        marginBottom: 5,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom:3,
-        borderRadius:10
+        paddingBottom: 3,
+        borderRadius: 10
     },
-    mainButton:{
-        flex:50,
-        height:33,        
-        justifyContent:'center',
-        alignItems:'center',  
-        borderColor:'black'
-    },    
+    mainButton: {
+        flex: 50,
+        height: 33,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: 'black'
+    },
 });

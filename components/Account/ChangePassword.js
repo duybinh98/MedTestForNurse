@@ -5,11 +5,12 @@ import { Icon } from 'react-native-elements';
 import ScreenTopMenuBack from './../Common/ScreenTopMenuBack';
 import { Field, reduxForm } from 'redux-form';
 import { CommonActions } from '@react-navigation/native';
-import {getApiUrl} from './../Common/CommonFunction';
+import { getApiUrl } from './../Common/CommonFunction';
 import renderField from '../../Validate/RenderField';
 import { load as loadAccount } from '../Reducers/InitialValue';
-import { loadNurseInfor } from  '../Reducers/LoadInforReducer';
+import { loadNurseInfor } from '../Reducers/LoadInforReducer';
 import { connect } from 'react-redux';
+import { login, logout } from '../Reducers/LoginReducer';
 
 
 //validate conditions
@@ -40,68 +41,98 @@ class changePassword extends Component {
         }
         this.props.load(nurseInfor)
     }
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps !== this.props) {
+            this.setState({
+                name: this.props.nurseInforLoad ? this.props.nurseInforLoad.name : '',
+                phonenumber: this.props.nurseInforLoad ? this.props.nurseInforLoad.phoneNumber : '',
+            })
+        }
+        const nurseInfor = {
+            username: this.props.nurseInforLoad ? this.props.nurseInforLoad.name : '',
+            phonenumber: this.props.nurseInforLoad ? this.props.nurseInforLoad.phoneNumber : '0000000000',
+            address: this.props.nurseInforLoad ? this.props.nurseInforLoad.address : '',
+            email: this.props.nurseInforLoad ? this.props.nurseInforLoad.email : '',
+        }
+        this.props.load(nurseInfor)
+    }
     submit = values => {
-        if (values.password === values.newPassword) {
-            alert("Mật khẩu mới phải khác mật khẩu cũ!")
-        } else if (values.cfNewPassword !== values.newPassword) {
-            alert("Xác nhận mật khẩu mới không đúng!")
+        if (values.cfNewPassword !== values.newPassword) {
+            Alert.alert(
+                'Đổi mật khẩu',
+                "Xác nhận mật khẩu mới không đúng!",
+            )
         } else {
             this.setState({
-                disabledButton : true,
+                disabledButton: true,
             })
-            fetch(getApiUrl()+'/users/nurses/change-password/'+this.state.nurseId, {
+            fetch(getApiUrl() + '/users/nurses/change-password/' + this.state.nurseId, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                    Authorization: 'Bearer '+this.props.token,
+                    Authorization: 'Bearer ' + this.props.token,
                 },
                 body: JSON.stringify({
                     oldPassword: this.state.password,
                     newPassword: this.state.newPassword,
                 }),
-                })
-            .then(res => res.json())
-            .then(
-                (result) => {
-                    this.setState({
-                        disabledButton : false,
-                    })
-                    if (result.changedSuccess == true) {
-                        Alert.alert(
-                            'Đổi mật khẩu',
-                            result.message,
-                        )
-                        this.props.navigation.dispatch(
-                            CommonActions.navigate({
-                                name: 'LoginScreen',
-                                params: {
-                                },
-                            })
-                        )
-                    } else {
-                        Alert.alert(
-                            'Lỗi đổi mật khẩu',
-                            result.message,
-                        )
+            })
+                .then(res => res.json())
+                .then(
+                    (result) => {
+                        this.setState({
+                            disabledButton: false,
+                        })
+                        if (result.changedSuccess == true) {
+                            Alert.alert(
+                                'Đổi mật khẩu',
+                                result.message,
+                            )
+                            this.props.navigation.dispatch(
+                                CommonActions.navigate({
+                                    name: 'LoginScreen',
+                                    params: {
+                                    },
+                                })
+                            )
+                        } else {
+                            if (result.message == 'Người dùng hiện tại đang bị khoá! Vui lòng liên hệ tới phòng khám để xử lý!') {
+                                Alert.alert(
+                                    'Thông báo',
+                                    result.message,
+                                    [
+                                        {
+                                            text: 'Xác nhận',
+                                            onPress: () => {
+                                                this.props.logout();
+                                                this.props.navigation.navigate('LoginScreen');
+                                            },
+                                        },
+                                    ],
+                                );
+                            } else {
+                                Alert.alert(
+                                    'Lỗi đổi mật khẩu',
+                                    result.message,
+                                )
+                            }
+                        }
+                    },
+                    (error) => {
+                        this.setState({
+                            error
+                        });
+                        console.log(error)
                     }
-                },
-                (error) => {
-                    this.setState({
-                        error
-                    });
-                    console.log(error)
-                }
-            );
+                );
+                this.props.reset();
         }
     }
 
 
 
     render() {
-        debugger;
-        const abc = this.props.customerInfo;
-        const a = this.state.newPassword;
         const { handleSubmit } = this.props;
         return (
             <View style={styles.background}>
@@ -146,6 +177,13 @@ class changePassword extends Component {
         );
     }
 }
+const mapStateToDispatch = (dispatch) => {
+    return {
+        load: (data) => dispatch(loadAccount(data)),
+        loadNurseInfor: (nurseInfor) => dispatch(loadNurseInfor(nurseInfor)),
+        logout: () => dispatch(logout()),
+    };
+}
 
 let ChangePasswordForm = reduxForm({
     form: 'changePassword',
@@ -160,9 +198,7 @@ ChangePasswordForm = connect(
         nurseInforLoad: state.loadNurse.nurseInfor,
         nurseInfor: state.login.nurseInfor
     }),
-    {
-        load: loadAccount,
-    }
+    mapStateToDispatch
 )(ChangePasswordForm);
 export default ChangePasswordForm;
 //#25345D

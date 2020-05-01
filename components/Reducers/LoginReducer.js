@@ -1,5 +1,6 @@
 import Promise from 'es6-promise';
 import { getApiUrl } from './../Common/CommonFunction'
+import {Alert} from 'react-native';
 
 const LOGIN_PENDING = 'LOGIN_PENDING';
 const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
@@ -131,7 +132,10 @@ function sendLoginRequest(phoneNumber, password) {
             .then(
                 (result) => {
                     if (result.message) {
-                        alert(result.message)
+                        Alert.alert(
+                            'Lỗi đăng nhập',
+                            result.message,
+                        )
                         return reject(new Error(result.message));
                     } else {
                         const token = result.token;

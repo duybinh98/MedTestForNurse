@@ -34,13 +34,14 @@ class RequestListHistoryScreen extends Component {
         })
     }
 
-    // componentDidUpdate  (prevProps, prevState) {
-    //      if (prevProps.route.params.requestHistoryList !== this.props.route.params.requestHistoryList) {
-    //         this.setState(previousState => ({ 
-    //             requestList: this.props.route.params.requestHistoryList? this.props.route.params.requestHistoryList : [],
-    //         }));
-    //     }
-    // }
+    componentDidUpdate(prevProps) {
+        if (prevProps !== this.props) {
+            this.setState({
+                nurseId: this.props.nurseInfor? this.props.nurseInfor.id: '-1',
+            });
+            this.callApiGetRequestHistoryList();
+        }
+    }
 
     callApiGetRequestHistoryList(){
         fetch(getApiUrl()+'/users/nurses/'+this.state.nurseId+'/list/request-completed', {

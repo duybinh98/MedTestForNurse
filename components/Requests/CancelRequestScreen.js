@@ -6,6 +6,9 @@ import { CommonActions } from '@react-navigation/native';
 import { getApiUrl, convertDateTimeToDate, convertDateTimeToTime, getStateName, getStateColor } from './../Common/CommonFunction'
 // import renderField from '../../Validate/RenderField'
 import { Field, reduxForm } from 'redux-form';
+import { connect } from 'react-redux';
+import { login, logout } from '../Reducers/LoginReducer';
+import { loadNurseInfor } from '../Reducers/LoadInforReducer';
 
 const required = values => values ? undefined : 'Thiếu lý do hủy xét nghiệm';
 
@@ -99,18 +102,51 @@ class CancelRequestScreen extends Component {
                                     this.setState({
                                         disabledButton: false,
                                     })
-                                    console.log(result)
-                                    this.props.navigation.dispatch(
-                                        CommonActions.navigate({
-                                            name: 'RequestListProcessingScreen',
-                                            params: {
-                                            },
-                                        }))
+                                    if (result.success == false) {
+                                        if (result.message == 'Người dùng hiện tại đang bị khoá! Vui lòng liên hệ tới phòng khám để xử lý!') {
+                                            Alert.alert(
+                                                'Thông báo',
+                                                result.message,
+                                                [
+                                                    {
+                                                        text: 'Xác nhận',
+                                                        onPress: () => {
+                                                            this.props.logout();
+                                                            this.props.navigation.navigate('LoginScreen');
+                                                        },
+                                                    },
+                                                ],
+                                            );
+                                        } else {
+                                            Alert.alert(
+                                                'Thông báo',
+                                                result.message,
+                                                [
+                                                    {
+                                                        text: 'Xác nhận',
+                                                        onPress: () => {
+                                                            this.props.navigation.navigate('RequestListProcessingScreen');
+                                                        },
+                                                    },
+                                                ],
+                                            );
+                                        }
+                                    } else {
+                                        
+                                        this.props.navigation.dispatch(
+                                            CommonActions.navigate({
+                                                name: 'RequestListProcessingScreen',
+                                                params: {
+                                                },
+                                            }))
+                                    }
+
                                 },
                                 (error) => {
                                     console.log(error)
                                 }
                             )
+                            this.props.reset();
                     }
                 },
             ]
@@ -200,11 +236,28 @@ class CancelRequestScreen extends Component {
         );
     }
 }
+
+const mapStateToProps = state => {
+    return {
+        token: state.login.token,
+        nurseInfor: state.loadNurse.nurseInfor,
+        isLoadSuccess: state.loadNurse.isLoadSuccess,
+        loadError: state.loadNurse.LoadError,
+    };
+};
+const mapStateToDispatch = dispatch => {
+    return {
+        load: nurseInfor => dispatch(loadNurseInfor(nurseInfor)),
+        logout: () => dispatch(logout()),
+    };
+};
 const CancelRequestForm = reduxForm({
     form: 'cancelRequestForm',
 })(CancelRequestScreen);
-export default CancelRequestForm;
-
+export default connect(
+    mapStateToProps,
+    mapStateToDispatch,
+)(CancelRequestForm);
 
 const { width: WIDTH } = Dimensions.get('window')
 const styles = StyleSheet.create({

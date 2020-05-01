@@ -9,8 +9,11 @@ import { getApiUrl } from './../Common/CommonFunction';
 import articlesList from './../../Data/Articles';
 import requestsList from './../../Data/RequestsList';
 import testList from './../../Data/Test';
+import { connect } from 'react-redux';
+import { login, logout } from '../Reducers/LoginReducer';
+import { loadNurseInfor } from '../Reducers/LoadInforReducer';
 
-export default class HomeScreen extends Component {
+class HomeScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -49,7 +52,10 @@ export default class HomeScreen extends Component {
             },
             {
                 text: 'Xác nhận',
-                onPress: () => BackHandler.exitApp(),
+                onPress: () => {
+                    this.props.logout();
+                    BackHandler.exitApp();
+                }
             },
             ], {
             cancelable: false,
@@ -211,6 +217,25 @@ export default class HomeScreen extends Component {
         );
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        isLoginSuccess: state.login.isLoginSuccess,
+        token: state.login.token,
+        nurseInforLoad: state.loadNurse.nurseInfor,
+        isLoadSuccess: state.loadNurse.isLoadSuccess,
+        loadError: state.loadNurse.LoadError
+    };
+}
+const mapStateToDispatch = (dispatch) => {
+    return {
+        load: (nurseInfor) => dispatch(loadNurseInfor(nurseInfor)),
+        // login: (phoneNumber, password) => dispatch(login(phoneNumber, password)),
+        logout: () => dispatch(logout()),
+    };
+}
+
+export default connect(mapStateToProps, mapStateToDispatch)(HomeScreen);
 const styles = StyleSheet.create({
     background: {
         flex: 1,

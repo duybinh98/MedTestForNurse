@@ -13,7 +13,7 @@ class NotificationListScreen extends Component {
     constructor(props) {
     super(props);
     this.state = {
-        customerId: this.props.nurseInfor? this.props.nurseInfor.id: '-1',
+        nurseId: this.props.nurseInfor? this.props.nurseInfor.id: '-1',
         notiList: [],
         dataChanged: true,
         testsList: [],
@@ -29,7 +29,7 @@ class NotificationListScreen extends Component {
     } 
 
     callNotiApi(){
-        fetch(getApiUrl()+'/users/'+this.state.customerId+'/notifications/list', {
+        fetch(getApiUrl()+'/users/'+this.state.nurseId+'/notifications/list', {
             method: 'GET',
             headers: {
                 Accept: 'application/json',

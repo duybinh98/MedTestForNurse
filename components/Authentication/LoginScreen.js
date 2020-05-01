@@ -5,7 +5,7 @@ import ScreenTopMenu from './../Common/ScreenTopMenu';
 import { Field, reduxForm } from 'redux-form';
 import { CommonActions } from '@react-navigation/native';
 import { connect } from 'react-redux';
-import { login } from '../Reducers/LoginReducer';
+import { login, logout} from '../Reducers/LoginReducer';
 import {loadNurseInfor} from '../Reducers/LoadInforReducer';
 import renderField from '../../Validate/RenderField'
 
@@ -22,7 +22,6 @@ class LoginComponent extends Component {
         this.state = {
             phoneNumber: '',
             password: '',
-            // customerInfoFromLogin: this.props.customerInforReducer ? this.props.customerInforReducer : null,
             nurseInfoFromLogin: null,
             disabledButton: false,
         };
@@ -48,7 +47,10 @@ class LoginComponent extends Component {
             },
             {
                 text: 'Xác nhận',
-                onPress: () => BackHandler.exitApp(),
+                onPress: () => {
+                    this.props.logout();
+                    BackHandler.exitApp();
+                }
             },
             ], {
             cancelable: false,
@@ -70,7 +72,7 @@ class LoginComponent extends Component {
         this.props.login(phoneNumber, password)
         let count = 0;
         var waitForIt = setInterval(() => {
-            if (this.props.isLoginSuccess == true || count > 50) {
+            if (this.props.isLoginSuccess == true || count > 200) {
                 clearInterval(waitForIt);
             }
             else console.log('wait')
@@ -81,11 +83,6 @@ class LoginComponent extends Component {
                 disabledButton : false,
             })
             if (this.props.nurseInfoFromLogin != null ) {                
-                // this.setState(previousState => ({
-                //     phoneNumber: '',
-                //     password: '',
-                // }));
-                console.log('get infor success')
                 this.props.load(this.props.nurseInfoFromLogin)
                 this.props.navigation.dispatch(
                     CommonActions.navigate({
@@ -153,7 +150,8 @@ const mapStateToDispatch = (dispatch) => {
     return {
         // load: (nurseInfor) => dispatch(loadNurseInfor(nurseInfor)),
         load: (nurseInfor) => dispatch(loadNurseInfor(nurseInfor)),
-        login: (phoneNumber, password) => dispatch(login(phoneNumber, password))
+        login: (phoneNumber, password) => dispatch(login(phoneNumber, password)),
+        logout: () => dispatch(logout()),
     };
 }
 const LoginForm = reduxForm({

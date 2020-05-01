@@ -118,7 +118,7 @@ class RequestListPendingScreen extends Component {
 
     sortByCreateTime() {
         const _requestList = this.state.requestList;
-        // if (_requestList != null) _requestList.sort((a, b) => b.requestCreatedTime.localeCompare(a.requestCreatedTime))
+        if (_requestList != null) _requestList.sort((a, b) => b.requestCreatedTime.localeCompare(a.requestCreatedTime))
         return _requestList;
     }
 
