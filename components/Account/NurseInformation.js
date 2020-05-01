@@ -145,7 +145,10 @@ class nurseInformation extends Component {
     render() {
         const { gender } = this.state;
         return (
-            <ScrollView style={{ flex: 1 }}>
+            <ScrollView
+                style={{ flex: 1 }}
+                showsVerticalScrollIndicator={false}
+            >
                 <ScreenTopMenuBack navigation={this.props.navigation} backScreen='HomeScreen'></ScreenTopMenuBack>
                 <View>
                     <View style={styles.logoContainer}>
@@ -155,31 +158,33 @@ class nurseInformation extends Component {
                         </ImageBackground>
                     </View>
                 </View>
-                <View style={styles.textContainer}>
-                    <Text style={styles.textInfor} >Tên hiển thị:  {this.state.nurseInfor ? this.state.nurseInfor.name : ""}</Text>
-                </View>
-                <View style={styles.textContainer}>
-                    <Text style={styles.textInfor} >Số điện thoại: {this.state.nurseInfor ? this.state.nurseInfor.phoneNumber : ""}</Text>
-                </View>
-                <View style={styles.dobGenderContainer}>
-                    <View style={styles.dobContainer}>
-                        <Text style={styles.textInfor} >Ngày sinh: {this.state.nurseInfor ? convertDateTimeToDate(this.state.nurseInfor.dob) : ""}</Text>
+                <View style={styles.infoArea}>
+                    <View style={styles.textContainer}>
+                        <Text style={styles.textInfor} >Tên hiển thị:  {this.state.nurseInfor ? this.state.nurseInfor.name : ""}</Text>
                     </View>
-                    <View style={styles.genderContainer}>
-                        <Text style={styles.textInfor} >Giới tính: {this.state.nurseInfor ? this.state.nurseInfor.gender === 0 ? "Nữ" : "Nam" : ''}</Text>
+                    <View style={styles.textContainer}>
+                        <Text style={styles.textInfor} >Số điện thoại: {this.state.nurseInfor ? this.state.nurseInfor.phoneNumber : ""}</Text>
                     </View>
-                </View>
-                <View style={styles.textContainer}>
-                    <Text style={styles.textInfor} >
+                    <View style={styles.dobGenderContainer}>
+                        <View style={styles.dobContainer}>
+                            <Text style={styles.textInfor} >Ngày sinh: {this.state.nurseInfor ? convertDateTimeToDate(this.state.nurseInfor.dob) : ""}</Text>
+                        </View>
+                        <View style={styles.genderContainer}>
+                            <Text style={styles.textInfor} >Giới tính: {this.state.nurseInfor ? this.state.nurseInfor.gender === 0 ? "Nữ" : "Nam" : ''}</Text>
+                        </View>
+                    </View>
+                    <View style={styles.textContainer}>
+                        <Text style={styles.textInfor} >
                             Địa chỉ:  {
-                            this.state.nurseInfor ?
-                                this.state.townName == '' || this.state.districtName == '' ? "Đang tải..."
-                                    : this.state.nurseInfor.address + ', ' + this.state.townName + ', ' + this.state.districtName
-                                : ""}
-                    </Text>
-                </View>
-                <View style={styles.textContainer}>
-                    <Text style={styles.textInfor} >Email: {this.state.nurseInfor ? this.state.nurseInfor.email : ''}</Text>
+                                this.state.nurseInfor ?
+                                    this.state.townName == '' || this.state.districtName == '' ? "Đang tải..."
+                                        : this.state.nurseInfor.address + ', ' + this.state.townName + ', ' + this.state.districtName
+                                    : ""}
+                        </Text>
+                    </View>
+                    <View style={styles.textContainer}>
+                        <Text style={styles.textInfor} >Email: {this.state.nurseInfor ? this.state.nurseInfor.email : ''}</Text>
+                    </View>
                 </View>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.btnConfirm}
@@ -226,6 +231,20 @@ const styles = StyleSheet.create({
         fontSize: 30,
         color: '#25345D',
     },
+    infoArea: {
+        height: 285,
+        width: Dimensions.get('window').width - 20,
+        backgroundColor: 'white',
+        marginTop: 5,
+        marginBottom: 5,
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        borderRadius: 10,
+        paddingTop: 3,
+        paddingBottom: 10,
+        marginHorizontal: 10
+    },
     textContainer: {
         marginTop: 10,
         borderWidth: 1,
@@ -239,6 +258,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flex: 1,
         marginTop: 10,
+        alignItems: 'center',
+        marginHorizontal: 17,
     },
     dobContainer: {
         flex: 70,
@@ -247,7 +268,6 @@ const styles = StyleSheet.create({
         height: 45,
         justifyContent: 'center',
         paddingLeft: 10,
-        marginLeft: 25,
     },
     genderContainer: {
         flex: 45,
@@ -257,7 +277,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingLeft: 10,
         marginLeft: 10,
-        marginRight: 30,
     },
     textInfor: {
         fontSize: 16,
