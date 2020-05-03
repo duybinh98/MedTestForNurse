@@ -20,8 +20,7 @@ class RequestListProcessingScreen extends Component {
             Button3Pressed: false,
             dataChanged: true,
             testsList: [],
-            requestList: this.props.route.params.requestProcessingList ? this.props.route.params.requestProcessingList : [],
-            requestViewList: this.props.route.params.requestProcessingList ? this.props.route.params.requestProcessingList : [],
+            requestList: [],
         };
         this.getAcceptedList = this.getAcceptedList.bind(this);
         this.getTransportingList = this.getTransportingList.bind(this);

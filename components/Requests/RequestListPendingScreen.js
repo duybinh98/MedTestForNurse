@@ -21,7 +21,6 @@ class RequestListPendingScreen extends Component {
             Button2Selected: false,
             dataChanged: true,
             testsList: [],
-            // requestList: this.props.route.params.requestPendingList? this.props.route.params.requestPendingList : [],
             requestList: [],
         };
         this.sortByCreateTime = this.sortByCreateTime.bind(this);
