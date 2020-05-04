@@ -478,7 +478,7 @@ class RequestViewScreen extends Component {
                         </View>
                         <View style={styles.textContainer}>
                             <Text style={styles.textInfor}>
-                                Ngày tạo đơn: {this.state.createdTime}
+                                Ngày tạo đơn: {convertDateTimeToDate(this.state.createdTime)}
                             </Text>
                         </View>
                         <View style={styles.doubleContainer}>
