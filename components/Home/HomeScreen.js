@@ -123,9 +123,38 @@ class HomeScreen extends Component {
             .then(res => res.json())
             .then(
                 (result) => {
-                    this.setState(previousState => ({
-                        articlesList: result,
-                    }));
+                    if (result.success == false) {
+                        if (result.message == 'Hệ thống đang xử lý. Vui lòng tải lại!') {
+                            Alert.alert(
+                                'Hệ thống: ',
+                                'Hệ thống đang xử lý. Vui lòng tải lại',
+                                [
+                                    {
+                                        text: 'Hủy',
+                                        onPress: () => {
+                                            return null;
+                                        },
+                                    },
+                                    {
+                                        text: 'Tải lại',
+                                        onPress: () => {
+                                            setTimeout(() => {
+                                                this.callApiArticlesList();
+                                            }, 5000);
+                                        },
+                                    },
+                                ],
+                            );
+                        } else {
+                            this.setState({
+                                articlesList: [],
+                            });
+                        }
+                    } else {
+                        this.setState(previousState => ({
+                            articlesList: result,
+                        }));
+                    }
                 },
                 (error) => {
                     this.setState({

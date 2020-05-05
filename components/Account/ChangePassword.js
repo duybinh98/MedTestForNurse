@@ -78,7 +78,7 @@ class changePassword extends Component {
                         this.setState({
                             disabledButton: false,
                         })
-                        if (result.changedSuccess == true) {
+                        if (result.success == true) {
                             Alert.alert(
                                 'Đổi mật khẩu',
                                 result.message,

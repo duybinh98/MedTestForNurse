@@ -34,7 +34,7 @@ export function getStateName(status) {
             return 'Đang đợi y tá nhận đơn';
             break;
         case 'coordinatorlostsample':
-            return 'Đang đợi y tá nhận đơn';
+            return 'Điều phối viên làm mất mẫu';
             break;
         case 'accepted':
             return 'Đang đợi lấy mẫu';
