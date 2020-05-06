@@ -89,7 +89,7 @@ class LoginComponent extends Component {
             else {
                 console.log('error at screen'+this.props.LoginError)
                 }
-        },18000)
+        },22000)
 
 
     }

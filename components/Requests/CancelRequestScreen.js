@@ -21,7 +21,7 @@ const renderField = ({
             <View style={styles.inputContainer}>
                 <TextInput style={styles.input} placeholder={placeholder} secureTextEntry={isSecureText}
                     keyboardType={keyboardType} editable={isEditable} numberOfLines={4}
-                    multiline={true} maxLength = {maxLength}
+                    multiline={true} maxLength={maxLength}
                     onChangeText={onChange} {...restInput} autoCapitalize='none'
                 ></TextInput>
 
@@ -125,14 +125,13 @@ class CancelRequestScreen extends Component {
                                                     {
                                                         text: 'Xác nhận',
                                                         onPress: () => {
-                                                            this.props.navigation.navigate('RequestListProcessingScreen');
+                                                            this.props.navigation.navigate('RequestListPendingScreen');
                                                         },
                                                     },
                                                 ],
                                             );
                                         }
                                     } else {
-                                        
                                         this.props.navigation.dispatch(
                                             CommonActions.navigate({
                                                 name: 'RequestListProcessingScreen',
@@ -146,7 +145,7 @@ class CancelRequestScreen extends Component {
                                     console.log(error)
                                 }
                             )
-                            this.props.reset();
+                        this.props.reset();
                     }
                 },
             ]
@@ -221,7 +220,7 @@ class CancelRequestScreen extends Component {
                         </View>
                     </View>
                     <Field name="reason" keyboardType="default" component={renderField}
-                        placeholder="Lý do" secureText={true} maxLength = {200}
+                        placeholder="Lý do" secureText={true} maxLength={200}
                         onChange={(text) => { this.setState({ reason: text }) }}
                         validate={[required]}
                     />

@@ -19,7 +19,14 @@ class NotificationListScreen extends Component {
         testsList: [],
     };
     }
-
+    componentDidUpdate(prevProps) {
+        if(prevProps.nurseInfor !== this.props.nurseInfor){
+            this.setState({
+                nurseId: this.props.nurseInfor? this.props.nurseInfor.id: '-1',
+                notiList: [],
+            })
+        }
+    }
     componentDidMount() {
         this.callNotiApi();
         this.callApiTestList();

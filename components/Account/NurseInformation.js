@@ -19,69 +19,29 @@ class nurseInformation extends Component {
             nurseInfor: null,
             nurseId: this.props.nurseInfor ? this.props.nurseInfor.id : '-1',
             token: this.props.token ? this.props.token : null,
-
-            townName: "",
-            districtName: '',
+            townName: this.props.nurseInfor ? this.props.nurseInfor.townName : "Chọn phường/xã",
+            districtName: this.props.nurseInfor ? this.props.nurseInfor.districtName : 'Chọn quận huyện',
             districtList: [],
             townList: [],
         };
     }
 
-    componentWillMount() {
-    }
-
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps !== this.props) {
+        if (prevProps.nurseInfor !== this.props.nurseInfor) {
             this.setState(previousState => ({
                 token: this.props.token,
-                nurseInfor: this.props.nurseInfor ? this.props.nurseInfor : this.state.nurseInfor
+                nurseInfor: this.props.nurseInfor ? this.props.nurseInfor : this.state.nurseInfor,
+                nurseId: this.props.nurseInfor ? this.props.nurseInfor.id : '-1',
+                townName: this.props.nurseInfor ? this.props.nurseInfor.townName : "Chọn phường/xã",
+                districtName: this.props.nurseInfor ? this.props.nurseInfor.districtName : 'Chọn quận huyện',
             }));
-            setTimeout(() => {
-                this.state.districtList.forEach(district => {
-                    if (district.districtCode === this.props.nurseInfor.districtCode) {
-                        this.setState({
-                            districtName: district.districtName
-                        })
-                    } else {
-                        console.log("Error")
-                    }
-                });
-                this.state.townList.forEach(town => {
-                    if (town.townCode === this.props.nurseInfor.townCode) {
-                        this.setState({
-                            townName: town.townName
-                        })
-                    } else {
-                        console.log("Error")
-                    }
-                });
-            }, 15000);
         }
     }
     componentDidMount() {
         this.callApinurseInfor();
-        this.callApiGetDistrictCode();
-        this.callApiGetTownCode();
-        setTimeout(() => {
-            this.state.districtList.forEach(district => {
-                if (district.districtCode === this.props.nurseInfor.districtCode) {
-                    this.setState({
-                        districtName: district.districtName
-                    })
-                } else {
-                    console.log("Error")
-                }
-            });
-            this.state.townList.forEach(town => {
-                if (town.townCode === this.props.nurseInfor.townCode) {
-                    this.setState({
-                        townName: town.townName
-                    })
-                } else {
-                    console.log("Error")
-                }
-            });
-        }, 20000);
+        this.props.navigation.addListener('focus', () => {
+            this.callApinurseInfor();
+        });
     }
     callApiGetDistrictCode() {
         fetch(getApiUrl() + "/management/districts/district-town-list")
@@ -177,8 +137,7 @@ class nurseInformation extends Component {
                         <Text style={styles.textInfor} >
                             Địa chỉ:  {
                                 this.state.nurseInfor ?
-                                    this.state.townName == '' || this.state.districtName == '' ? "Đang tải..."
-                                        : this.state.nurseInfor.address + ', ' + this.state.townName + ', ' + this.state.districtName
+                                    this.state.nurseInfor.address + ', ' + this.state.townName + ', ' + this.state.districtName
                                     : ""}
                         </Text>
                     </View>

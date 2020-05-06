@@ -36,7 +36,7 @@ class changePassword extends Component {
         this.props.load(nurseInfor)
     }
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps !== this.props) {
+        if (prevProps.nurseInforLoad !== this.props.nurseInforLoad) {
             this.setState({
                 name: this.props.nurseInforLoad ? this.props.nurseInforLoad.name : '',
                 phonenumber: this.props.nurseInforLoad ? this.props.nurseInforLoad.phoneNumber : '',

@@ -132,7 +132,7 @@ class RequestViewScreen extends Component {
                                     {
                                         text: 'Xác nhận',
                                         onPress: () => {
-                                            this.props.navigation.navigate('RequestListProcessingScreen');
+                                            this.props.navigation.navigate('RequestListPendingScreen');
                                         },
                                     },
                                 ],
@@ -191,7 +191,7 @@ class RequestViewScreen extends Component {
                 { text: 'Hủy', onPress: () => { return null } },
                 {
                     text: 'Xác nhận', onPress: () => {
-                        this.callApiUpdateRequest('pending', 'I want to release this request', 'RequestListPendingScreen')
+                        this.callApiUpdateRequest('pending', 'I want to release this request', 'RequestListProcessingScreen')
                     }
                 },
             ]
@@ -206,7 +206,7 @@ class RequestViewScreen extends Component {
                 { text: 'Hủy', onPress: () => { return null } },
                 {
                     text: 'Xác nhận', onPress: () => {
-                        this.callApiUpdateRequest('coordinatorlostsample', 'I want to release this request', 'RequestListPendingScreen')
+                        this.callApiUpdateRequest('coordinatorlostsample', 'I want to release this request', 'RequestListProcessingScreen')
                     }
                 },
             ]

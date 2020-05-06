@@ -36,9 +36,10 @@ class RequestListProcessingScreen extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps !== this.props) {
+        if (prevProps.nurseInfor !== this.props.nurseInfor) {
             this.setState({
                 nurseId: this.props.nurseInfor ? this.props.nurseInfor.id : '-1',
+                requestList: [],
             });
             this.callApiGetRequestProcessingList();
         }
